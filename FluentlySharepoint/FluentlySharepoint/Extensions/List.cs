@@ -11,7 +11,6 @@ namespace FluentlySharepoint.Extensions
 			var web = operation.DecideWeb();
 			var list = web.Lists.GetByTitle(name);
 
-			operation.Context.Load(web);
 			if (listLoader != null)
 				listLoader(operation.Context, list);
 			else

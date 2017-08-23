@@ -90,6 +90,7 @@
     <Compile Include="CSOMOperation.cs" />
     <Compile Include="DeferredAction.cs" />
     <Compile Include="DeferredActions.cs" />
+    <Compile Include="Extensions\Folder.cs" />
     <Compile Include="Extensions\List.cs" />
     <Compile Include="Extensions\Web.cs" />
     <Compile Include="Models\FieldCreationInformation.cs" />
