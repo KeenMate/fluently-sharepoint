@@ -26,27 +26,5 @@ namespace FluentlySharepoint
 
 			return operation;
 		}
-
-		public static CSOMOperation Execute(this CSOMOperation operation)
-		{
-			operation.Context.ExecuteQuery();
-
-			foreach (var action in operation.ActionQueue)
-			{
-				switch (action.Action)
-				{
-					case DeferredActions.Load:
-						operation.ProcessLoaded(action.ClientObject);
-						break;
-					case DeferredActions.Delete:
-						operation.ProcessDelete(action.ClientObject);
-						break;
-				}
-			}
-
-			operation.Context.ExecuteQuery();
-
-			return operation;
-		}
 	}
 }

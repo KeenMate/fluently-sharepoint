@@ -139,6 +139,28 @@ namespace FluentlySharepoint
 			}
 		}
 
+		public CSOMOperation Execute()
+		{
+			Context.ExecuteQuery();
+
+			foreach (var action in ActionQueue)
+			{
+				switch (action.Action)
+				{
+					case DeferredActions.Load:
+						ProcessLoaded(action.ClientObject);
+						break;
+					case DeferredActions.Delete:
+						ProcessDelete(action.ClientObject);
+						break;
+				}
+			}
+
+			Context.ExecuteQuery();
+
+			return this;
+		}
+
 		public void Dispose()
 		{
 			Context?.Dispose();
