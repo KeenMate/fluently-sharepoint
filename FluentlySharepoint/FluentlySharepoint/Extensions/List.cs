@@ -13,7 +13,7 @@ namespace FluentlySharepoint.Extensions
 
 			operation.Context.Load(web);
 			if (listLoader != null)
-				listLoader(operation.Context, operation.LastList);
+				listLoader(operation.Context, list);
 			else
 			{
 				operation.Context.Load(list);
