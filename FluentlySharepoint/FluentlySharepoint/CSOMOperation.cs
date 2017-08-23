@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using FluentlySharepoint.Interfaces;
 using Microsoft.SharePoint.Client;
 
@@ -91,6 +92,49 @@ namespace FluentlySharepoint
 				case List l when level == OperationLevels.List && !LevelLock.List:
 					LastList = l;
 					OperationLevel = OperationLevels.List;
+					break;
+			}
+		}
+
+		private void ProcessDelete(ClientObject clientObject)
+		{
+			switch (clientObject)
+			{
+				case Web w:
+					LoadedWebs.Remove(w.Url);
+					w.DeleteObject();
+					break;
+				case List l:
+					LoadedLists.Remove(l.Title);
+					l.DeleteObject();
+					break;
+				case ListItemCollection lic:
+					lic.ToList().ForEach(li => li.DeleteObject());
+					break;
+			}
+		}
+
+		private void ProcessLoaded(ClientObject clientObject)
+		{
+			switch (clientObject)
+			{
+				case Web w:
+					if (!LoadedWebs.ContainsKey(w.ServerRelativeUrl))
+						LoadedWebs.Add(w.ServerRelativeUrl, w);
+					break;
+				case Site s:
+					if (!LoadedSites.ContainsKey(s.ServerRelativeUrl))
+						LoadedSites.Add(s.ServerRelativeUrl, s);
+					break;
+				case List l:
+					if (!LoadedLists.ContainsKey(l.Title))
+						LoadedLists.Add(l.Title, l);
+					break;
+				case WebCollection wc:
+					wc.ToList().ForEach(ProcessLoaded);
+					break;
+				case ListCollection lc:
+					lc.ToList().ForEach(ProcessLoaded);
 					break;
 			}
 		}
