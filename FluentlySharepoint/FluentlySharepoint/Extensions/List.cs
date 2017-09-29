@@ -18,6 +18,8 @@ namespace FluentlySharepoint.Extensions
 				operation.Context.Load(list);
 			}
 
+			operation.Context.Load(list, l=>l.Title);
+
 			operation.SetLevel(OperationLevels.List, list);
 			operation.ActionQueue.Enqueue(new DeferredAction { ClientObject = operation.LastList, Action = DeferredActions.Load });
 

@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using FluentlySharepoint.Assets;
 using FluentlySharepoint.Interfaces;
+using FluentlySharepoint.Loggers;
 using Microsoft.SharePoint.Client;
 
 namespace FluentlySharepoint
@@ -14,12 +16,21 @@ namespace FluentlySharepoint
 
 		private LevelLock LevelLock { get; } = new LevelLock();
 
-		public CSOMOperation(string webUrl, ILogger logger = null)
+		public ClientContext Context { get; set; }
+
+		public ILogger Logger { get; set; } = new BlackHoleLogger();
+		public Dictionary<string, Site> LoadedSites { get; } = new Dictionary<string, Site>(5);
+		public Dictionary<string, Web> LoadedWebs { get; } = new Dictionary<string, Web>(5);
+		public Dictionary<string, List> LoadedLists { get; } = new Dictionary<string, List>(5);
+
+		public Site LastSite { get; private set; }
+		public Web LastWeb { get; private set; }
+		public List LastList { get; private set; }
+
+		public CSOMOperation(string webUrl)
 		{
 			OriginalWebUrl = webUrl;
 			Context = new ClientContext(webUrl);
-
-			Logger = logger;
 
 			LastSite = Context.Site;
 			LastWeb = RootWeb = Context.Web;
@@ -31,23 +42,19 @@ namespace FluentlySharepoint
 			ActionQueue.Enqueue(new DeferredAction { ClientObject = LastWeb, Action = DeferredActions.Load });
 		}
 
-		public ClientContext Context { get; set; }
+		public CSOMOperation(string webUrl, ILogger logger = null) : this(webUrl)
+		{
+			Logger = logger;
+		}
 
-		public ILogger Logger { get; set; }
-		public Dictionary<string, Site> LoadedSites { get; } = new Dictionary<string, Site>(5);
-		public Dictionary<string, Web> LoadedWebs { get; } = new Dictionary<string, Web>(5);
-		public Dictionary<string, List> LoadedLists { get; } = new Dictionary<string, List>(5);
-
-		public Site LastSite { get; private set; }
-		public Web LastWeb { get; private set; }
-		public List LastList { get; private set; }
+		public Func<CSOMOperation, Exception, CSOMOperation> FailHandler { get; set; }
 
 		public Queue<DeferredAction> ActionQueue { get; } = new Queue<DeferredAction>(10);
 
 		public CSOMOperation LockLevels(params OperationLevels[] levels)
 		{
 			SetLocks(levels, true);
-			
+
 			return this;
 		}
 
@@ -141,7 +148,9 @@ namespace FluentlySharepoint
 
 		public CSOMOperation Execute()
 		{
-			Context.ExecuteQuery();
+			executeContext(out var success); // no sense to continue processing when the first execute failed
+
+			if (!success) return this;
 
 			foreach (var action in ActionQueue)
 			{
@@ -156,9 +165,26 @@ namespace FluentlySharepoint
 				}
 			}
 
-			Context.ExecuteQuery();
+			return executeContext(out success);
+		}
 
-			return this;
+		private CSOMOperation executeContext(out bool successful)
+		{
+			Logger.Debug(Messages.AboutToExecute);
+			try
+			{
+				Context.ExecuteQuery();
+				Logger.Debug(Messages.SuccededToExecute);
+				successful = true;
+				return this;
+			}
+			catch (Exception ex)
+			{
+				Logger.Warn(ex, Messages.FailedToExecute);
+				FailHandler?.Invoke(this, ex);
+				successful = false;
+				return this;
+			}
 		}
 
 		public void Dispose()

@@ -85,6 +85,11 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Messages.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Messages.resx</DependentUpon>
+    </Compile>
     <Compile Include="CSOMFluentExtensions.cs" />
     <Compile Include="CSOMHelpers.cs" />
     <Compile Include="CSOMOperation.cs" />
@@ -93,6 +98,7 @@
     <Compile Include="Extensions\Folder.cs" />
     <Compile Include="Extensions\List.cs" />
     <Compile Include="Extensions\Web.cs" />
+    <Compile Include="Loggers\BlackHoleLogger.cs" />
     <Compile Include="Models\FieldCreationInformation.cs" />
     <Compile Include="Interfaces\ILogger.cs" />
     <Compile Include="OperationLevels.cs" />
@@ -103,6 +109,11 @@
       <SubType>Designer</SubType>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Assets\Messages.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Messages.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>
