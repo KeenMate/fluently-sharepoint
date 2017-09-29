@@ -15,6 +15,7 @@ namespace FluentlySharepoint
 		public OperationLevels OperationLevel { get; protected set; } = OperationLevels.Web;
 
 		private LevelLock LevelLock { get; } = new LevelLock();
+		public int DefaultTimeout { get; }
 
 		public ClientContext Context { get; set; }
 
@@ -27,10 +28,19 @@ namespace FluentlySharepoint
 		public Web LastWeb { get; private set; }
 		public List LastList { get; private set; }
 
+		public CSOMOperation(ClientContext context) : this(context.Url)
+		{
+			Context = context;
+		}
+
 		public CSOMOperation(string webUrl)
 		{
 			OriginalWebUrl = webUrl;
-			Context = new ClientContext(webUrl);
+
+			if (Context == null)
+				Context = new ClientContext(webUrl);
+
+			DefaultTimeout = Context.RequestTimeout;
 
 			LastSite = Context.Site;
 			LastWeb = RootWeb = Context.Web;
@@ -46,6 +56,7 @@ namespace FluentlySharepoint
 		{
 			Logger = logger;
 		}
+
 
 		public Func<CSOMOperation, Exception, CSOMOperation> FailHandler { get; set; }
 

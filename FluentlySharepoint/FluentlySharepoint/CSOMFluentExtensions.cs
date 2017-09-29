@@ -39,6 +39,18 @@ namespace FluentlySharepoint
 			return operation;
 		}
 
+		public static CSOMOperation SetTimeout(this CSOMOperation operation, int timeout)
+		{
+			operation.Context.RequestTimeout = timeout;
+			return operation;
+		}
+
+		public static CSOMOperation ResetOperation(this CSOMOperation operation)
+		{
+			operation.Context.RequestTimeout = operation.DefaultTimeout;
+			return operation;
+		}
+
 		/// <summary>
 		/// On fail handler executed in all-catch block of clientContext.Execute() command
 		/// </summary>

@@ -33,6 +33,7 @@ namespace TestConsole
 				.Create(logger)
 				.SetOnlineCredentials(UserName, Password) // Available also with SecureString parameter
 				.Execute();
+			Console.WriteLine("Default timeout: " + op.Context.RequestTimeout);
 		}
 
 		private static void CreateExecuteAndReuse()
