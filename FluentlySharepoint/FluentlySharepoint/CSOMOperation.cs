@@ -27,10 +27,17 @@ namespace FluentlySharepoint
 		public Web LastWeb { get; private set; }
 		public List LastList { get; private set; }
 
+		public CSOMOperation(ClientContext context): this(context.Url)
+		{
+			Context = context;
+		}
+
 		public CSOMOperation(string webUrl)
 		{
 			OriginalWebUrl = webUrl;
-			Context = new ClientContext(webUrl);
+
+			if (Context == null)
+				Context = new ClientContext(webUrl);
 
 			LastSite = Context.Site;
 			LastWeb = RootWeb = Context.Web;
