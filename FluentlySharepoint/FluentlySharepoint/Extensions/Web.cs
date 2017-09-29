@@ -9,7 +9,7 @@ namespace FluentlySharepoint.Extensions
 		{
 			var webs = operation.DecideWeb().Webs;
 
-			operation.Context.Load<WebCollection>(webs);
+			operation.Context.Load(webs);
 			operation.ActionQueue.Enqueue(new DeferredAction { ClientObject = webs, Action = DeferredActions.Load });
 
 			return operation;
@@ -58,7 +58,7 @@ namespace FluentlySharepoint.Extensions
 
 			var web = operation.DecideWeb().Webs.Add(webInformation);
 
-			operation.Context.Load<Microsoft.SharePoint.Client.Web>(web);
+			operation.Context.Load(web);
 			operation.SetLevel(OperationLevels.Web, web);
 			operation.ActionQueue.Enqueue(new DeferredAction { ClientObject = web, Action = DeferredActions.Load });
 

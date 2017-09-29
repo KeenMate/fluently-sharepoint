@@ -97,6 +97,7 @@
     <Compile Include="DeferredActions.cs" />
     <Compile Include="Extensions\Folder.cs" />
     <Compile Include="Extensions\List.cs" />
+    <Compile Include="Extensions\Site.cs" />
     <Compile Include="Extensions\Web.cs" />
     <Compile Include="Loggers\BlackHoleLogger.cs" />
     <Compile Include="Models\FieldCreationInformation.cs" />
