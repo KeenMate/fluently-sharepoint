@@ -61,6 +61,15 @@ namespace FluentlySharepoint.Assets {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to About to call user-defined executor.
+        /// </summary>
+        internal static string AboutToCallExecutor {
+            get {
+                return ResourceManager.GetString("AboutToCallExecutor", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to About to execute the context.
         /// </summary>
         internal static string AboutToExecute {

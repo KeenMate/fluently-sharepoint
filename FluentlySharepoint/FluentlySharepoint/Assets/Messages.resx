@@ -117,6 +117,9 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="AboutToCallExecutor" xml:space="preserve">
+    <value>About to call user-defined executor</value>
+  </data>
   <data name="AboutToExecute" xml:space="preserve">
     <value>About to execute the context</value>
   </data>

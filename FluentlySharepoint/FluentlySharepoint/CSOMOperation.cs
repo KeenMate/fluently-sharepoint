@@ -57,6 +57,7 @@ namespace FluentlySharepoint
 			Logger = logger;
 		}
 
+		public Action<ClientContext> Executor { get; set; }
 
 		public Func<CSOMOperation, Exception, CSOMOperation> FailHandler { get; set; }
 
@@ -182,6 +183,13 @@ namespace FluentlySharepoint
 		private CSOMOperation executeContext(out bool successful)
 		{
 			Logger.Debug(Messages.AboutToExecute);
+
+			if (Executor != null)
+			{
+				Logger.Debug(Messages.AboutToCallExecutor);
+				Executor.Invoke(Context);
+			}
+
 			try
 			{
 				Context.ExecuteQuery();

@@ -45,9 +45,15 @@ namespace FluentlySharepoint
 			return operation;
 		}
 
-		public static CSOMOperation ResetOperation(this CSOMOperation operation)
+		public static CSOMOperation ResetTimeout(this CSOMOperation operation)
 		{
 			operation.Context.RequestTimeout = operation.DefaultTimeout;
+			return operation;
+		}
+
+		public static CSOMOperation OnEachRequest(this CSOMOperation operation, Action<ClientContext> executor)
+		{
+			operation.Executor = executor;
 			return operation;
 		}
 
