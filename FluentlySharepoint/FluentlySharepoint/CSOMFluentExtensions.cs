@@ -20,6 +20,16 @@ namespace FluentlySharepoint
 			return new CSOMOperation(url, logger);
 		}
 
+		public static CSOMOperation Create(this ClientContext context)
+		{
+			return new CSOMOperation(context);
+		}
+
+		public static CSOMOperation Create(this ClientContext context, ILogger logger)
+		{
+			return new CSOMOperation(context, logger);
+		}
+
 		public static CSOMOperation SetupContext(this CSOMOperation operation, Action<ClientContext> setup)
 		{
 			setup(operation.Context);

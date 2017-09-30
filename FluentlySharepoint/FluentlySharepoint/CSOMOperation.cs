@@ -15,7 +15,7 @@ namespace FluentlySharepoint
 		public OperationLevels OperationLevel { get; protected set; } = OperationLevels.Web;
 
 		private LevelLock LevelLock { get; } = new LevelLock();
-		public int DefaultTimeout { get; }
+		public int DefaultTimeout { get; private set; }
 
 		public ClientContext Context { get; set; }
 
@@ -28,18 +28,33 @@ namespace FluentlySharepoint
 		public Web LastWeb { get; private set; }
 		public List LastList { get; private set; }
 
-		public CSOMOperation(ClientContext context) : this(context.Url)
+		public CSOMOperation(ClientContext context) : this(context, null)
+		{
+		}
+
+		public CSOMOperation(ClientContext context, ILogger logger = null)
 		{
 			Context = context;
+			Logger = logger??Logger;
+
+			setupOperation(Context);
 		}
 
 		public CSOMOperation(string webUrl)
 		{
 			OriginalWebUrl = webUrl;
+			Context = new ClientContext(webUrl);
 
-			if (Context == null)
-				Context = new ClientContext(webUrl);
+			setupOperation(Context);
+		}
 
+		public CSOMOperation(string webUrl, ILogger logger = null) : this(webUrl)
+		{
+			Logger = logger ?? Logger;
+		}
+
+		private void setupOperation(ClientContext context)
+		{
 			DefaultTimeout = Context.RequestTimeout;
 
 			LastSite = Context.Site;
@@ -50,11 +65,6 @@ namespace FluentlySharepoint
 
 			Context.Load(LastWeb);
 			ActionQueue.Enqueue(new DeferredAction { ClientObject = LastWeb, Action = DeferredActions.Load });
-		}
-
-		public CSOMOperation(string webUrl, ILogger logger = null) : this(webUrl)
-		{
-			Logger = logger;
 		}
 
 		public Action<ClientContext> Executor { get; set; }
