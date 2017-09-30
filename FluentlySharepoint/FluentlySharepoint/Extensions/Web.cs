@@ -67,8 +67,6 @@ namespace FluentlySharepoint.Extensions
 
 		public static CSOMOperation DeleteWeb(this CSOMOperation operation)
 		{
-			operation.LastWeb.DeleteObject();
-
 			operation.ActionQueue.Enqueue(new DeferredAction {ClientObject = operation.LastWeb, Action = DeferredActions.Delete});
 			return operation;
 		}
