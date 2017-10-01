@@ -26,3 +26,17 @@ op.LoadList(listTitle, (context, list) =>
 var items = op.GetItems();
 
 ```
+## Reuse existing CSOM client context
+```
+ClientContext context = new ClientContext(SiteUrl);
+context.Credentials = new SharePointOnlineCredentials(UserName, Password.ToSecureString());
+
+var listTitle = "Documents";
+
+var items = context
+	.Create()
+	.LoadList(listTitle)
+	.GetItems();
+
+logger.Info($"Total items of list {listTitle} with list.ItemCount: {items.Count}");
+```			
