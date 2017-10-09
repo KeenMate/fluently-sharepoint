@@ -14,5 +14,12 @@
     <releaseNotes>Summary of changes made in this release of the package.</releaseNotes>
     <copyright>Copyright 2017</copyright>
     <tags>sharepoint csom clientcontext fluently</tags>
+	  <dependencies>
+		  <dependency id="Microsoft.SharePointOnline.CSOM" version="16.1.6802.1200" />
+	  </dependencies>
   </metadata>
+	<files>
+		<file></file>
+	</files>
+	
 </package>
