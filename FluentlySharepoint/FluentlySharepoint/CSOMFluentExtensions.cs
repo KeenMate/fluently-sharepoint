@@ -2,11 +2,11 @@
 using System.Linq;
 using System.Net;
 using System.Security;
-using FluentlySharepoint.Interfaces;
-using FluentlySharepoint.Models;
+using KeenMate.FluentlySharePoint.Interfaces;
+using KeenMate.FluentlySharePoint.Models;
 using Microsoft.SharePoint.Client;
 
-namespace FluentlySharepoint
+namespace KeenMate.FluentlySharePoint
 {
 	public static class CSOMFluentExtensions
 	{

@@ -4,7 +4,7 @@ using System.Xml;
 using System.Xml.Serialization;
 using Microsoft.SharePoint.Client;
 
-namespace FluentlySharepoint.Models
+namespace KeenMate.FluentlySharePoint.Models
 {
 	[XmlRoot("Field")]
 	public class FieldCreationInformation

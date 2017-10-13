@@ -1,8 +1,8 @@
 ﻿using System;
-using FluentlySharepoint.Models;
+using KeenMate.FluentlySharePoint.Models;
 using Microsoft.SharePoint.Client;
 
-namespace FluentlySharepoint.Extensions
+namespace KeenMate.FluentlySharePoint.Extensions
 {
 	public static class List
 	{

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace FluentlySharepoint.Assets {
+namespace KeenMate.FluentlySharePoint.Assets {
     using System;
     
     

@@ -1,7 +1,7 @@
 ﻿using System;
-using FluentlySharepoint.Interfaces;
+using KeenMate.FluentlySharePoint.Interfaces;
 
-namespace FluentlySharepoint.Loggers
+namespace KeenMate.FluentlySharePoint.Loggers
 {
     public class BlackHoleLogger : ILogger
     {

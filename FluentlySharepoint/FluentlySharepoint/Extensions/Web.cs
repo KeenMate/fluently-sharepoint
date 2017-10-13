@@ -1,7 +1,7 @@
 ﻿using System;
 using Microsoft.SharePoint.Client;
 
-namespace FluentlySharepoint.Extensions
+namespace KeenMate.FluentlySharePoint.Extensions
 {
 	public static class Web
 	{

@@ -1,4 +1,4 @@
-﻿namespace FluentlySharepoint
+﻿namespace KeenMate.FluentlySharePoint
 {
 	public enum DeferredActions
 	{

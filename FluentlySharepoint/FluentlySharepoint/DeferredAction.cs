@@ -1,6 +1,6 @@
 ﻿using Microsoft.SharePoint.Client;
 
-namespace FluentlySharepoint
+namespace KeenMate.FluentlySharePoint
 {
 	public class DeferredAction
 	{

@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace FluentlySharepoint.Interfaces
+namespace KeenMate.FluentlySharePoint.Interfaces
 {
 	public interface ILogger
 	{

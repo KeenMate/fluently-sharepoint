@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using FluentlySharepoint.Assets;
-using FluentlySharepoint.Interfaces;
-using FluentlySharepoint.Loggers;
+using KeenMate.FluentlySharePoint.Assets;
+using KeenMate.FluentlySharePoint.Interfaces;
+using KeenMate.FluentlySharePoint.Loggers;
 using Microsoft.SharePoint.Client;
 
-namespace FluentlySharepoint
+namespace KeenMate.FluentlySharePoint
 {
 	public class CSOMOperation : IDisposable
 	{

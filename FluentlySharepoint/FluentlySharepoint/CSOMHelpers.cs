@@ -5,7 +5,7 @@ using System.Security;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace FluentlySharepoint
+namespace KeenMate.FluentlySharePoint
 {
 	public static class CSOMHelpers
 	{

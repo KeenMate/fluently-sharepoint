@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using NLog;
-using ILogger = FluentlySharepoint.Interfaces.ILogger;
+using ILogger = KeenMate.FluentlySharePoint.Interfaces.ILogger;
 
-namespace FluentlySharePoint_Nlog
+namespace KeenMate.FluentlySharePoint_Nlog
 {
 	public class NlogLogger : ILogger
 	{
@@ -19,7 +19,7 @@ namespace FluentlySharePoint_Nlog
 		{
 			message = MessageFormat(CorrelationId, message);
 
-			if(level == LogLevel.Debug)
+			if (level == LogLevel.Debug)
 				logger.Debug(message);
 			else if (level == LogLevel.Error)
 			{
@@ -35,7 +35,7 @@ namespace FluentlySharePoint_Nlog
 			}
 			else if (level == LogLevel.Off)
 			{
-				
+
 			}
 			else if (level == LogLevel.Trace)
 			{
