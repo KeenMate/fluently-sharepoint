@@ -1,6 +1,7 @@
 ﻿using System;
 using KeenMate.FluentlySharePoint.Models;
 using Microsoft.SharePoint.Client;
+using KeenMate.FluentlySharePoint.Assets;
 
 namespace KeenMate.FluentlySharePoint.Extensions
 {
@@ -78,8 +79,11 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			return operation;
 		}
 
-		public static ListItemCollection GetItems(this CSOMOperation operation, string queryString)
+		public static ListItemCollection GetItems(this CSOMOperation operation, string queryString, int? rowLimit = null)
 		{
+			if (rowLimit != null)
+				queryString = string.Format(CamlQueries.WrappedWithRowLimit, queryString, rowLimit);
+
 			var caml = new CamlQuery { ViewXml = queryString };
 
 			return operation.GetItems(caml);
