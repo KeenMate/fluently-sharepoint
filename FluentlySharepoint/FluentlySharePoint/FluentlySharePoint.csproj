@@ -1,0 +1,44 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>net40;net45</TargetFrameworks>
+    <RootNamespace>KeenMate.FluentlySharePoint</RootNamespace>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <PackageId>KeenMate.FluentlySharePoint</PackageId>
+    <Version>0.0.1</Version>
+    <Company>KEEN|MATE</Company>
+    <Copyright>Copyright © KEEN|MATE 2017</Copyright>
+    <PackageLicenseUrl>https://github.com/KeenMate/fluently-sharepoint/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://github.com/KeenMate/fluently-sharepoint</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/KeenMate/fluently-sharepoint</RepositoryUrl>
+    <PackageTags>sharepoint csom fluently</PackageTags>
+    <AssemblyVersion>0.0.0.1</AssemblyVersion>
+    <Authors>kmBenjaminHorne</Authors>
+    <Description>Sentence-like CSOM programming experience</Description>
+    <FileVersion>0.0.0.1</FileVersion>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcore45|AnyCPU'">
+    <DefineConstants>TRACE;DEBUG;4_5</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SharePointOnline.CSOM" Version="16.1.6906.1200" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Compile Update="Assets\CamlQueries.Designer.cs">
+      <DesignTime>True</DesignTime>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>CamlQueries.resx</DependentUpon>
+    </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <EmbeddedResource Update="Assets\CamlQueries.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>CamlQueries.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
+  </ItemGroup>
+
+</Project>
