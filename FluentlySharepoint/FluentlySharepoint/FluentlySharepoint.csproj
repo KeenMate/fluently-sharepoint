@@ -5,17 +5,17 @@
     <RootNamespace>KeenMate.FluentlySharePoint</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>KeenMate.FluentlySharePoint</PackageId>
-    <Version>0.3.0</Version>
+    <Version>0.3.1</Version>
     <Company>KEEN|MATE</Company>
     <Copyright>Copyright © KEEN|MATE 2017</Copyright>
     <PackageLicenseUrl>https://github.com/KeenMate/fluently-sharepoint/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/KeenMate/fluently-sharepoint</PackageProjectUrl>
     <RepositoryUrl>https://github.com/KeenMate/fluently-sharepoint</RepositoryUrl>
     <PackageTags>sharepoint csom fluently</PackageTags>
-    <AssemblyVersion>0.3.0.0</AssemblyVersion>
+    <AssemblyVersion>0.3.1.0</AssemblyVersion>
     <Authors>kmBenjaminHorne</Authors>
     <Description>Sentence-like CSOM programming experience</Description>
-    <FileVersion>0.3.0.0</FileVersion>
+    <FileVersion>0.3.1.0</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcore45|AnyCPU'">
