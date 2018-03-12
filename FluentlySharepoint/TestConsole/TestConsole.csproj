@@ -6,12 +6,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="KeenMate.FluentlySharePoint.NlogLogger" Version="0.1.0" />
     <PackageReference Include="NLog.Config" Version="4.4.12" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\FluentlySharePoint\FluentlySharePoint.csproj" />
-    <ProjectReference Include="..\FluentlySharePoint-Nlog\FluentlySharePoint-Nlog.csproj" />
   </ItemGroup>
 
   <ItemGroup>
