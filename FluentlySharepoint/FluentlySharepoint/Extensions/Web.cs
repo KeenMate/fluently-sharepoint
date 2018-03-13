@@ -20,15 +20,17 @@ namespace KeenMate.FluentlySharePoint.Extensions
 		{
 			var web = operation.LastSite.OpenWeb(name);
 
+			operation.LoadWebRequired(web);
+
 			if (webLoader != null)
-				webLoader(operation.Context, operation.LastWeb);
+				webLoader(operation.Context, web);
 			else
 			{
-				operation.Context.Load(operation.LastWeb);
+				operation.Context.Load(web);
 			}
 
 			operation.SetLevel(OperationLevels.Web, web);
-			operation.ActionQueue.Enqueue(new DeferredAction { ClientObject = operation.LastWeb, Action = DeferredActions.Load });
+			operation.ActionQueue.Enqueue(new DeferredAction { ClientObject = web, Action = DeferredActions.Load });
 
 			return operation;
 		}

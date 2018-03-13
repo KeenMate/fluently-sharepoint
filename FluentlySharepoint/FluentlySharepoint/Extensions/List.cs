@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Linq;
 using KeenMate.FluentlySharePoint.Models;
 using Microsoft.SharePoint.Client;
 using KeenMate.FluentlySharePoint.Assets;
+using KeenMate.FluentlySharePoint.Enums;
+using ListTemplate = KeenMate.FluentlySharePoint.Enums.ListTemplate;
 
 namespace KeenMate.FluentlySharePoint.Extensions
 {
@@ -10,7 +13,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 		public static CSOMOperation LoadList(this CSOMOperation operation, string name, Action<ClientContext, Microsoft.SharePoint.Client.List> listLoader = null)
 		{
 			var web = operation.DecideWeb();
-			var list = web.Lists.GetByTitle(name);
+			var list = web.Lists.First(l => l.Title == name);
 
 			if (listLoader != null)
 				listLoader(operation.Context, list);
@@ -151,9 +154,14 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			return operation;
 		}
 
+		public static CSOMOperation CreateList(this CSOMOperation operation, string name, ListTemplate template)
+		{
+			return operation.CreateList(name, operation.LastWeb.ListTemplates.First(t => t.ListTemplateTypeKind == (int) template).Name);
+		}
+
 		public static CSOMOperation DeleteList(this CSOMOperation operation, string name)
 		{
-			var list = operation.LastWeb.Lists.GetByTitle(name);
+			var list = operation.LastWeb.Lists.First(l => l.Title == name);
 
 			operation.ActionQueue.Enqueue(new DeferredAction { ClientObject = list, Action = DeferredActions.Delete });
 

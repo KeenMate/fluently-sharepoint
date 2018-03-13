@@ -60,6 +60,9 @@ namespace KeenMate.FluentlySharePoint
 			LastSite = Context.Site;
 			LastWeb = RootWeb = Context.Web;
 
+			LoadWebRequired(LastWeb);
+			LoadSiteRequired(LastSite);
+
 			Context.Load(LastSite);
 			ActionQueue.Enqueue(new DeferredAction { ClientObject = LastSite, Action = DeferredActions.Load });
 
@@ -125,6 +128,16 @@ namespace KeenMate.FluentlySharePoint
 			}
 		}
 
+		public void LoadWebRequired(Web web)
+		{
+			Context.Load(web, w1 => w1.ServerRelativeUrl, w2 => w2.ListTemplates, w3 => w3.Lists);
+		}
+
+		public void LoadSiteRequired(Site site)
+		{
+			// Placeholder
+		}
+
 		private void ProcessDelete(ClientObject clientObject)
 		{
 			switch (clientObject)
@@ -148,16 +161,13 @@ namespace KeenMate.FluentlySharePoint
 			switch (clientObject)
 			{
 				case Web w:
-					if (!LoadedWebs.ContainsKey(w.ServerRelativeUrl))
-						LoadedWebs.Add(w.ServerRelativeUrl, w);
+					LoadedWebs[w.ServerRelativeUrl] = w;
 					break;
 				case Site s:
-					if (!LoadedSites.ContainsKey(s.ServerRelativeUrl))
-						LoadedSites.Add(s.ServerRelativeUrl, s);
+					LoadedSites[s.ServerRelativeUrl] = s; 
 					break;
 				case List l:
-					if (!LoadedLists.ContainsKey(l.Title))
-						LoadedLists.Add(l.Title, l);
+					LoadedLists[l.Title] = l;
 					break;
 				case WebCollection wc:
 					wc.ToList().ForEach(ProcessLoaded);
@@ -174,8 +184,10 @@ namespace KeenMate.FluentlySharePoint
 
 			if (!success) return this;
 
-			foreach (var action in ActionQueue)
+			while (ActionQueue.Count > 0)
 			{
+				var action = ActionQueue.Dequeue();
+
 				switch (action.Action)
 				{
 					case DeferredActions.Load:
