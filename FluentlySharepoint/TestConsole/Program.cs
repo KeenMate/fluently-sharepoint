@@ -62,7 +62,7 @@ namespace TestConsole
 				.Create(logger)
 				.SetOnlineCredentials(UserName, Password) // Available also with SecureString parameter
 				.Execute();
-
+			
 			var listTitle = "Documents";
 
 			op.LoadList(listTitle, (context, list) =>
