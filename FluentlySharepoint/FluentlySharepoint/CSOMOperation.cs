@@ -78,35 +78,16 @@ namespace KeenMate.FluentlySharePoint
 
 		public CSOMOperation LockLevels(params OperationLevels[] levels)
 		{
-			SetLocks(levels, true);
+			LevelLock.SetLocks(levels, true);
 
 			return this;
 		}
 
 		public CSOMOperation UnlockLevels(params OperationLevels[] levels)
 		{
-			SetLocks(levels, false);
+			LevelLock.SetLocks(levels, false);
 
 			return this;
-		}
-
-		private void SetLocks(OperationLevels[] levels, bool value)
-		{
-			foreach (var level in levels)
-			{
-				switch (level)
-				{
-					case OperationLevels.Web:
-						LevelLock.Web = value;
-						break;
-					case OperationLevels.Site:
-						LevelLock.Site = value;
-						break;
-					case OperationLevels.List:
-						LevelLock.List = value;
-						break;
-				}
-			}
 		}
 
 		public void SetLevel(OperationLevels level, ClientObject levelObject)
@@ -232,12 +213,5 @@ namespace KeenMate.FluentlySharePoint
 		{
 			Context?.Dispose();
 		}
-	}
-
-	class LevelLock
-	{
-		public bool Site { get; set; }
-		public bool Web { get; set; }
-		public bool List { get; set; }
 	}
 }

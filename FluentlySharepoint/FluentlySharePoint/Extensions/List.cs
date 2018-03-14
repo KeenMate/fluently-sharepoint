@@ -44,6 +44,20 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			return operation;
 		}
 
+		//public static CSOMOperation GetColumns(this CSOMOperation operation, Action<ClientContext, FieldCollection> fieldsLoader = null)
+		//{
+		//	if (fieldsLoader != null)
+		//	{
+		//		fieldsLoader(operation.Context, operation.LastList.Fields);
+		//	}
+		//	else
+		//	{
+		//		operation.Context.Load(operation.LastList.Fields);
+		//	}
+
+		//	return operation;
+		//}
+
 		public static CSOMOperation ChangeColumn(this CSOMOperation operation, string columnName, FieldType? type = null, string displayName = null, bool? required = null, bool? uniqueValues = null)
 		{
 			var field = operation.LastList.Fields.GetByInternalNameOrTitle(columnName);
@@ -87,7 +101,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			if (rowLimit != null)
 				queryString = string.Format(CamlQueries.WrappedWithRowLimit, queryString, rowLimit);
 
-			var caml = new CamlQuery { ViewXml = queryString };
+			var caml = new CamlQuery { ViewXml = $"<View>{queryString}</View>" };
 
 			return operation.GetItems(caml);
 		}
