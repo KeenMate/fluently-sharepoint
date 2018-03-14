@@ -130,7 +130,7 @@ namespace KeenMate.FluentlySharePoint
 
 		public void LoadWebRequired(Web web)
 		{
-			Context.Load(web, w1 => w1.ServerRelativeUrl, w2 => w2.ListTemplates, w3 => w3.Lists);
+			Context.Load(web, w => w.ServerRelativeUrl, w => w.ListTemplates);
 		}
 
 		public void LoadSiteRequired(Site site)

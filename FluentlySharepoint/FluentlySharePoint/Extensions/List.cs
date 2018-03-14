@@ -13,7 +13,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 		public static CSOMOperation LoadList(this CSOMOperation operation, string name, Action<ClientContext, Microsoft.SharePoint.Client.List> listLoader = null)
 		{
 			var web = operation.DecideWeb();
-			var list = web.Lists.First(l => l.Title == name);
+			var list = web.Lists.GetByTitle(name);
 
 			if (listLoader != null)
 				listLoader(operation.Context, list);
@@ -161,7 +161,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 
 		public static CSOMOperation DeleteList(this CSOMOperation operation, string name)
 		{
-			var list = operation.LastWeb.Lists.First(l => l.Title == name);
+			var list = operation.LoadedLists[name];
 
 			operation.ActionQueue.Enqueue(new DeferredAction { ClientObject = list, Action = DeferredActions.Delete });
 
