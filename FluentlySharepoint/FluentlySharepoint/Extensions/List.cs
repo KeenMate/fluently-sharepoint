@@ -13,7 +13,9 @@ namespace KeenMate.FluentlySharePoint.Extensions
 		public static CSOMOperation LoadList(this CSOMOperation operation, string name, Action<ClientContext, Microsoft.SharePoint.Client.List> listLoader = null)
 		{
 			var web = operation.DecideWeb();
-			var list = web.Lists.First(l => l.Title == name);
+			var list = web.Lists.GetByTitle(name);
+
+			operation.LoadListRequired(list);
 
 			if (listLoader != null)
 				listLoader(operation.Context, list);
@@ -21,8 +23,6 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			{
 				operation.Context.Load(list);
 			}
-
-			operation.Context.Load(list, l=>l.Title);
 
 			operation.SetLevel(OperationLevels.List, list);
 			operation.ActionQueue.Enqueue(new DeferredAction { ClientObject = operation.LastList, Action = DeferredActions.Load });
@@ -44,7 +44,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			return operation;
 		}
 
-		public static CSOMOperation ChangeColumn(this CSOMOperation operation, string columnName, FieldType? type = null, string displayName = null, bool? required = null, bool? uniqueValues = null)
+		public static CSOMOperation ModifyColumn(this CSOMOperation operation, string columnName, FieldType? type = null, string displayName = null, bool? required = null, bool? uniqueValues = null)
 		{
 			var field = operation.LastList.Fields.GetByInternalNameOrTitle(columnName);
 
@@ -87,7 +87,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			if (rowLimit != null)
 				queryString = string.Format(CamlQueries.WrappedWithRowLimit, queryString, rowLimit);
 
-			var caml = new CamlQuery { ViewXml = queryString };
+			var caml = new CamlQuery { ViewXml = $"<View>{queryString}</View>" };
 
 			return operation.GetItems(caml);
 		}
@@ -161,7 +161,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 
 		public static CSOMOperation DeleteList(this CSOMOperation operation, string name)
 		{
-			var list = operation.LastWeb.Lists.First(l => l.Title == name);
+			var list = operation.LoadedLists[name];
 
 			operation.ActionQueue.Enqueue(new DeferredAction { ClientObject = list, Action = DeferredActions.Delete });
 
