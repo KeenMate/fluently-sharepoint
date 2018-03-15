@@ -63,10 +63,10 @@ namespace KeenMate.FluentlySharePoint
 			LoadWebRequired(LastWeb);
 			LoadSiteRequired(LastSite);
 
-			Context.Load(LastSite);
+			//Context.Load(LastSite);
 			ActionQueue.Enqueue(new DeferredAction { ClientObject = LastSite, Action = DeferredActions.Load });
 
-			Context.Load(LastWeb);
+			//Context.Load(LastWeb);
 			ActionQueue.Enqueue(new DeferredAction { ClientObject = LastWeb, Action = DeferredActions.Load });
 		}
 
@@ -109,14 +109,19 @@ namespace KeenMate.FluentlySharePoint
 			}
 		}
 
+		public void LoadSiteRequired(Site site)
+		{
+			Context.Load(site, s => s.ServerRelativeUrl);
+		}
+
 		public void LoadWebRequired(Web web)
 		{
 			Context.Load(web, w => w.ServerRelativeUrl, w => w.ListTemplates);
 		}
 
-		public void LoadSiteRequired(Site site)
+		public void LoadListRequired(List list)
 		{
-			// Placeholder
+			Context.Load(list, l => l.Title, l => l.RootFolder);
 		}
 
 		private void ProcessDelete(ClientObject clientObject)

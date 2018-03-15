@@ -15,14 +15,14 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			var web = operation.DecideWeb();
 			var list = web.Lists.GetByTitle(name);
 
+			operation.LoadListRequired(list);
+
 			if (listLoader != null)
 				listLoader(operation.Context, list);
 			else
 			{
 				operation.Context.Load(list);
 			}
-
-			operation.Context.Load(list, l=>l.Title);
 
 			operation.SetLevel(OperationLevels.List, list);
 			operation.ActionQueue.Enqueue(new DeferredAction { ClientObject = operation.LastList, Action = DeferredActions.Load });
@@ -44,21 +44,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			return operation;
 		}
 
-		//public static CSOMOperation GetColumns(this CSOMOperation operation, Action<ClientContext, FieldCollection> fieldsLoader = null)
-		//{
-		//	if (fieldsLoader != null)
-		//	{
-		//		fieldsLoader(operation.Context, operation.LastList.Fields);
-		//	}
-		//	else
-		//	{
-		//		operation.Context.Load(operation.LastList.Fields);
-		//	}
-
-		//	return operation;
-		//}
-
-		public static CSOMOperation ChangeColumn(this CSOMOperation operation, string columnName, FieldType? type = null, string displayName = null, bool? required = null, bool? uniqueValues = null)
+		public static CSOMOperation ModifyColumn(this CSOMOperation operation, string columnName, FieldType? type = null, string displayName = null, bool? required = null, bool? uniqueValues = null)
 		{
 			var field = operation.LastList.Fields.GetByInternalNameOrTitle(columnName);
 
