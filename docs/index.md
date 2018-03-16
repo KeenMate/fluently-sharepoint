@@ -7,7 +7,7 @@ A library created for better experience with Microsoft Sharepoint CSOM library.
     example 1
     ```
   </div>
-  <div class="column">
+  <div markdown="1" class="column">
     ```
     example 2
     ```
