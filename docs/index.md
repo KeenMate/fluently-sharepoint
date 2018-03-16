@@ -8,7 +8,9 @@ A library created for better experience with Microsoft Sharepoint CSOM library.
     ```
   </div>
   <div markdown="1" class="column">
-    example 2 is so lame
+    {% highlight c# %}
+      var op = SiteURL.Create();
+    {% endhighlight %}
   </div>
 </div>
 
