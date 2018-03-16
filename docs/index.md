@@ -2,10 +2,10 @@
 A library created for better experience with Microsoft Sharepoint CSOM library.
 
 <div markdown="0" class="two-columns">
-  <div markdown="1" class="column">
+  <div class="column">
     {% include comparison/example1-fluently.md %}
   </div>
-  <div markdown="1" class="column">
+  <div class="column">
     {% include comparison/example1-csom.md %}
   </div>
 </div>
