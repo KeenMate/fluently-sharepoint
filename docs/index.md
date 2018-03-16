@@ -9,7 +9,8 @@ A library created for better experience with Microsoft Sharepoint CSOM library.
     }
   </div>
   <div markdown="1" class="column">
-      var op = SiteURL.Create();
+    var op = SiteURL.Create();
+    op.SelectWeb("Dashboard");
   </div>
 </div>
 
