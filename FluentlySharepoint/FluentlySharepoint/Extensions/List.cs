@@ -12,6 +12,8 @@ namespace KeenMate.FluentlySharePoint.Extensions
 	{
 		public static CSOMOperation LoadList(this CSOMOperation operation, string name, Action<ClientContext, Microsoft.SharePoint.Client.List> listLoader = null)
 		{
+			operation.LogDebug($"Loading list {name}");
+
 			var web = operation.DecideWeb();
 			var list = web.Lists.GetByTitle(name);
 
@@ -46,6 +48,8 @@ namespace KeenMate.FluentlySharePoint.Extensions
 
 		public static CSOMOperation ModifyColumn(this CSOMOperation operation, string columnName, FieldType? type = null, string displayName = null, bool? required = null, bool? uniqueValues = null)
 		{
+			operation.LogInfo($"Modifying column {columnName}");
+
 			var field = operation.LastList.Fields.GetByInternalNameOrTitle(columnName);
 
 			if (type.HasValue) field.TypeAsString = type.ToString();
@@ -60,6 +64,8 @@ namespace KeenMate.FluentlySharePoint.Extensions
 
 		public static CSOMOperation DeleteColumn(this CSOMOperation operation, string columnName)
 		{
+			operation.LogInfo($"Removing column {columnName}");
+
 			var field = operation.LastList.Fields.GetByInternalNameOrTitle(columnName);
 			field.DeleteObject();
 
@@ -68,6 +74,8 @@ namespace KeenMate.FluentlySharePoint.Extensions
 
 		public static CSOMOperation AddColumn(this CSOMOperation operation, string name, FieldType type, string displayName = "", bool required = false, bool uniqueValues = false)
 		{
+			operation.LogInfo($"Adding column {name}");
+
 			FieldCreationInformation fieldInformation = new FieldCreationInformation
 			{
 				InternalName = name,
@@ -99,6 +107,9 @@ namespace KeenMate.FluentlySharePoint.Extensions
 
 		public static ListItemCollection GetItems(this CSOMOperation operation, CamlQuery query)
 		{
+			operation.LogInfo("Getting items");
+			operation.LogDebug("Query:\n{query.ViewXml}");
+
 			var listItems = operation.LastList.GetItems(query);
 
 			operation.Context.Load(listItems);
@@ -127,6 +138,9 @@ namespace KeenMate.FluentlySharePoint.Extensions
 
 		public static CSOMOperation DeleteItems(this CSOMOperation operation, CamlQuery query)
 		{
+			operation.LogInfo("Deleting items");
+			operation.LogDebug($"Query:\n{query}");
+
 			var items = operation.LastList.GetItems(query);
 
 			operation.Context.Load(items);
@@ -137,6 +151,8 @@ namespace KeenMate.FluentlySharePoint.Extensions
 
 		public static CSOMOperation CreateList(this CSOMOperation operation, string name, string template = null)
 		{
+			operation.LogInfo($"Creating list {name}");
+
 			ListCreationInformation listInformation = new ListCreationInformation
 			{
 				Title = name,
@@ -161,6 +177,8 @@ namespace KeenMate.FluentlySharePoint.Extensions
 
 		public static CSOMOperation DeleteList(this CSOMOperation operation, string name)
 		{
+			operation.LogInfo($"Deleting list {name}");
+
 			var list = operation.LoadedLists[name];
 
 			operation.ActionQueue.Enqueue(new DeferredAction { ClientObject = list, Action = DeferredActions.Delete });

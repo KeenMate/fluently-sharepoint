@@ -4,8 +4,6 @@ namespace KeenMate.FluentlySharePoint.Interfaces
 {
 	public interface ILogger
 	{
-        Guid CorrelationId { get; set; }
-
 		void Trace(string message);
 		void Debug(string message);
 		void Info(string message);

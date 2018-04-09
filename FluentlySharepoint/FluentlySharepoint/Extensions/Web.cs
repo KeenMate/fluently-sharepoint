@@ -9,6 +9,8 @@ namespace KeenMate.FluentlySharePoint.Extensions
 		{
 			var webs = operation.DecideWeb().Webs;
 
+			operation.LogDebug("Loading all webs");
+
 			operation.Context.Load(webs);
 			operation.ActionQueue.Enqueue(new DeferredAction { ClientObject = webs, Action = DeferredActions.Load });
 
@@ -18,6 +20,8 @@ namespace KeenMate.FluentlySharePoint.Extensions
 		public static CSOMOperation LoadWeb(this CSOMOperation operation, string name = "",
 			Action<ClientContext, Microsoft.SharePoint.Client.Web> webLoader = null)
 		{
+			operation.LogDebug($"Loading web");
+
 			var web = operation.LastSite.OpenWeb(name);
 
 			operation.LoadWebRequired(web);
@@ -33,6 +37,24 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			operation.ActionQueue.Enqueue(new DeferredAction { ClientObject = web, Action = DeferredActions.Load });
 
 			return operation;
+		}
+
+		public static ListTemplateCollection GetCustomListTemplates(this CSOMOperation operation, Action<ClientContext, ListTemplateCollection> templatesLoader = null)
+		{
+			var templates = operation.LastSite.GetCustomListTemplates(operation.DecideWeb());
+
+			if (templatesLoader != null)
+			{
+				templatesLoader(operation.Context, templates);
+			}
+			else
+			{
+				operation.Context.Load(templates);
+			}
+
+			operation.Context.ExecuteQuery();
+
+			return templates;
 		}
 
 		public static CSOMOperation SelectWeb(this CSOMOperation operation, string url)
@@ -51,6 +73,8 @@ namespace KeenMate.FluentlySharePoint.Extensions
 
 		public static CSOMOperation CreateWeb(this CSOMOperation operation, string name, string url = "", string template = "")
 		{
+			operation.LogInfo($"Creating web {name}");
+
 			WebCreationInformation webInformation = new WebCreationInformation
 			{
 				Title = name,
@@ -60,16 +84,22 @@ namespace KeenMate.FluentlySharePoint.Extensions
 
 			var web = operation.DecideWeb().Webs.Add(webInformation);
 
+			operation.LoadWebRequired(web);
 			operation.Context.Load(web);
+
 			operation.SetLevel(OperationLevels.Web, web);
 			operation.ActionQueue.Enqueue(new DeferredAction { ClientObject = web, Action = DeferredActions.Load });
+
 
 			return operation;
 		}
 
 		public static CSOMOperation DeleteWeb(this CSOMOperation operation)
 		{
+			operation.LogInfo("Deleting selected web");
+
 			operation.ActionQueue.Enqueue(new DeferredAction {ClientObject = operation.LastWeb, Action = DeferredActions.Delete});
+
 			return operation;
 		}
 

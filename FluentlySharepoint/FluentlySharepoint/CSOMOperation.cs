@@ -19,7 +19,10 @@ namespace KeenMate.FluentlySharePoint
 
 		public ClientContext Context { get; set; }
 
-		public ILogger Logger { get; set; } = new BlackHoleLogger();
+		public Guid CorrelationId { get; set; }
+		private ILogger Logger { get; set; } = new BlackHoleLogger();
+		public Func<Guid, string, string> LogMessageFormat { get; set; } = (correlationId, message) => $"{correlationId}: {message}";
+
 		public Dictionary<string, Site> LoadedSites { get; } = new Dictionary<string, Site>(5);
 		public Dictionary<string, Web> LoadedWebs { get; } = new Dictionary<string, Web>(5);
 		public Dictionary<string, List> LoadedLists { get; } = new Dictionary<string, List>(5);
@@ -51,6 +54,7 @@ namespace KeenMate.FluentlySharePoint
 		public CSOMOperation(string webUrl, ILogger logger = null) : this(webUrl)
 		{
 			Logger = logger ?? Logger;
+			LogInfo("Operation created");
 		}
 
 		private void setupOperation(ClientContext context)
@@ -60,19 +64,25 @@ namespace KeenMate.FluentlySharePoint
 			LastSite = Context.Site;
 			LastWeb = RootWeb = Context.Web;
 
+			LogDebug("Loading initial data");
+
 			LoadWebRequired(LastWeb);
 			LoadSiteRequired(LastSite);
 
-			//Context.Load(LastSite);
 			ActionQueue.Enqueue(new DeferredAction { ClientObject = LastSite, Action = DeferredActions.Load });
-
-			//Context.Load(LastWeb);
 			ActionQueue.Enqueue(new DeferredAction { ClientObject = LastWeb, Action = DeferredActions.Load });
 		}
 
 		public Action<ClientContext> Executor { get; set; }
 
 		public Func<CSOMOperation, Exception, CSOMOperation> FailHandler { get; set; }
+
+		public void LogTrace(string message) => Logger.Trace(LogMessageFormat(CorrelationId, message));
+		public void LogDebug(string message) => Logger.Debug(LogMessageFormat(CorrelationId, message));
+		public void LogInfo(string message) => Logger.Info(LogMessageFormat(CorrelationId, message));
+		public void LogWarn(string message) => Logger.Warn(LogMessageFormat(CorrelationId, message));
+		public void LogError(string message) => Logger.Error(LogMessageFormat(CorrelationId, message));
+		public void LogFatal(string message) => Logger.Fatal(LogMessageFormat(CorrelationId, message));
 
 		public Queue<DeferredAction> ActionQueue { get; } = new Queue<DeferredAction>(10);
 
@@ -164,6 +174,12 @@ namespace KeenMate.FluentlySharePoint
 			}
 		}
 
+		public CSOMOperation SetLogMessageFormat(Func<Guid, string, string> logMessageFormat)
+		{
+			LogMessageFormat = logMessageFormat;
+			return this;
+		}
+
 		public CSOMOperation Execute()
 		{
 			executeContext(out var success); // no sense to continue processing when the first execute failed
@@ -190,24 +206,24 @@ namespace KeenMate.FluentlySharePoint
 
 		private CSOMOperation executeContext(out bool successful)
 		{
-			Logger.Debug(Messages.AboutToExecute);
+			LogInfo(Messages.AboutToExecute);
 
 			if (Executor != null)
 			{
-				Logger.Debug(Messages.AboutToCallExecutor);
+				LogDebug(Messages.AboutToCallExecutor);
 				Executor.Invoke(Context);
 			}
 
 			try
 			{
 				Context.ExecuteQuery();
-				Logger.Debug(Messages.SuccededToExecute);
+				LogDebug(Messages.SuccededToExecute);
 				successful = true;
 				return this;
 			}
 			catch (Exception ex)
 			{
-				Logger.Warn(ex, Messages.FailedToExecute);
+				LogWarn(Messages.FailedToExecute);
 				FailHandler?.Invoke(this, ex);
 				successful = false;
 				return this;

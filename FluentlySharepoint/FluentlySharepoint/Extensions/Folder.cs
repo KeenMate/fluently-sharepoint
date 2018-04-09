@@ -6,6 +6,8 @@ namespace KeenMate.FluentlySharePoint.Extensions
 	{
 		public static CSOMOperation CreateFolder(this CSOMOperation operation, string remotePath, bool overwrite = true)
 		{
+			operation.LogInfo($"Creating folder: {remotePath}");
+
 			var list = operation.LastList;
 			var resourceFolderPath = ResourcePath.FromDecodedUrl(list.RootFolder.Name + "/" + remotePath);
 
@@ -18,6 +20,8 @@ namespace KeenMate.FluentlySharePoint.Extensions
 
 		public static CSOMOperation DeleteFolder(this CSOMOperation operation, string remotePath)
 		{
+			operation.LogInfo($"Deleting folder: {remotePath}");
+
 			var list = operation.LastList;
 			var resourceFolderPath = ResourcePath.FromDecodedUrl(list.RootFolder.Name + "/" + remotePath);
 
