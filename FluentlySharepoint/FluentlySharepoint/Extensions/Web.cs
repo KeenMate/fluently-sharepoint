@@ -1,17 +1,22 @@
 ﻿using System;
+using System.Linq.Expressions;
 using Microsoft.SharePoint.Client;
 
 namespace KeenMate.FluentlySharePoint.Extensions
 {
 	public static class Web
 	{
-		public static CSOMOperation LoadWebs(this CSOMOperation operation) // todo add custom loader
+		public static CSOMOperation LoadWebs(this CSOMOperation operation, params Expression<Func<Microsoft.SharePoint.Client.Web, object>>[] keysToLoad) // todo add custom loader
 		{
 			var webs = operation.DecideWeb().Webs;
 
 			operation.LogDebug("Loading all webs");
 
-			operation.Context.Load(webs);
+			operation.Context.Load(webs, w => w.Include(web => web.ServerRelativeUrl, web => web.ListTemplates));
+
+			if (keysToLoad.Length > 0)
+				operation.Context.Load(webs, w => w.Include(keysToLoad));
+
 			operation.ActionQueue.Enqueue(new DeferredAction { ClientObject = webs, Action = DeferredActions.Load });
 
 			return operation;

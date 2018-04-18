@@ -4,6 +4,7 @@
 	{
 		Web,
 		Site,
-		List
+		List,
+		ContentType
 	}
 }

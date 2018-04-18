@@ -30,6 +30,7 @@ namespace KeenMate.FluentlySharePoint
 		public Site LastSite { get; private set; }
 		public Web LastWeb { get; private set; }
 		public List LastList { get; private set; }
+		public ContentType LastContentType { get; private set; }
 
 		public CSOMOperation(ClientContext context) : this(context, null)
 		{
@@ -116,6 +117,10 @@ namespace KeenMate.FluentlySharePoint
 					LastList = l;
 					OperationLevel = OperationLevels.List;
 					break;
+				case ContentType c when level == OperationLevels.ContentType && !LevelLock.ContentType:
+					LastContentType = c;
+					OperationLevel = OperationLevels.ContentType;
+					break;
 			}
 		}
 
@@ -126,7 +131,7 @@ namespace KeenMate.FluentlySharePoint
 
 		public void LoadWebRequired(Web web)
 		{
-			Context.Load(web, w => w.ServerRelativeUrl, w => w.ListTemplates);
+			Context.Load(web, w => w.ServerRelativeUrl, w => w.ListTemplates, w => w.ContentTypes);
 		}
 
 		public void LoadListRequired(List list)

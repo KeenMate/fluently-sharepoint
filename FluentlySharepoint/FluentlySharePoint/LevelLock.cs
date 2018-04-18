@@ -5,6 +5,7 @@
 		public bool Site { get; set; }
 		public bool Web { get; set; }
 		public bool List { get; set; }
+		public bool ContentType { get; set; }
 
 		public void SetLocks(OperationLevels[] levels, bool value)
 		{
@@ -20,6 +21,9 @@
 						break;
 					case OperationLevels.List:
 						List = value;
+						break;
+					case OperationLevels.ContentType:
+						ContentType = value;
 						break;
 				}
 			}

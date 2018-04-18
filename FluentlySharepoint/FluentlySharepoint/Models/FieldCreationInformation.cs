@@ -36,6 +36,8 @@ namespace KeenMate.FluentlySharePoint.Models
 		[XmlAttribute("EnforceUniqueValues")]
 		public bool UniqueValues { get; set; }
 
+		[XmlElement] public string Default { get; set; }
+
 		public string ToXml()
 		{
 			var serializer = new XmlSerializer(GetType());
