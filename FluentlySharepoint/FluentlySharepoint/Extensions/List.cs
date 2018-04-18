@@ -46,12 +46,21 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			return operation;
 		}
 
+		public static CSOMOperation ModifyList(this CSOMOperation operation, Action<Microsoft.SharePoint.Client.List> changes)
+		{
+			changes(operation.LastList);
+			operation.LastList.Update();
+
+			return operation;
+		}
+
 		public static CSOMOperation ModifyColumn(this CSOMOperation operation, string columnName, FieldType? type = null, string displayName = null, bool? required = null, bool? uniqueValues = null)
 		{
 			operation.LogInfo($"Modifying column {columnName}");
 
-			var field = operation.LastList.Fields.GetByInternalNameOrTitle(columnName);
+			var field = DecideFieldSource(operation).GetByInternalNameOrTitle(columnName);
 
+			if (field == null)
 			if (type.HasValue) field.TypeAsString = type.ToString();
 			if (!String.IsNullOrEmpty(displayName)) field.Title = displayName;
 			if (required.HasValue) field.Required = required.Value;
@@ -66,13 +75,13 @@ namespace KeenMate.FluentlySharePoint.Extensions
 		{
 			operation.LogInfo($"Removing column {columnName}");
 
-			var field = operation.LastList.Fields.GetByInternalNameOrTitle(columnName);
+			var field = DecideFieldSource(operation).GetByInternalNameOrTitle(columnName);
 			field.DeleteObject();
 
 			return operation;
 		}
 
-		public static CSOMOperation AddColumn(this CSOMOperation operation, string name, FieldType type, string displayName = "", bool required = false, bool uniqueValues = false)
+		public static CSOMOperation AddField(this CSOMOperation operation, string name, FieldType type, string displayName = "", bool required = false, bool uniqueValues = false, string defaultValue = "", string group = "")
 		{
 			operation.LogInfo($"Adding column {name}");
 
@@ -82,10 +91,12 @@ namespace KeenMate.FluentlySharePoint.Extensions
 				DisplayName = String.IsNullOrEmpty(displayName) ? name : displayName,
 				FieldType = type,
 				Required = required,
-				UniqueValues = uniqueValues
+				UniqueValues = uniqueValues,
+				Group = group,
+				Default = defaultValue
 			};
 
-			operation.LastList.Fields.AddFieldAsXml(fieldInformation.ToXml(), true, AddFieldOptions.AddFieldInternalNameHint | AddFieldOptions.AddFieldToDefaultView);
+			DecideFieldSource(operation).AddFieldAsXml(fieldInformation.ToXml(), true, AddFieldOptions.AddFieldInternalNameHint);
 
 			return operation;
 		}
@@ -184,6 +195,11 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			operation.ActionQueue.Enqueue(new DeferredAction { ClientObject = list, Action = DeferredActions.Delete });
 
 			return operation;
+		}
+
+		private static FieldCollection DecideFieldSource(CSOMOperation operation)
+		{
+			return operation.OperationLevel == OperationLevels.ContentType ? operation.LastContentType.Fields : operation.LastList.Fields;
 		}
 	}
 }
