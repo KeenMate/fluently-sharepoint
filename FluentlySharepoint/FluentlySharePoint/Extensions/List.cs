@@ -158,7 +158,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			operation.LogDebug($"Query:\n{query}");
 
 			var items = operation.LastList.GetItems(query);
-
+			 
 			operation.Context.Load(items);
 			operation.ActionQueue.Enqueue(new DeferredAction { ClientObject = items, Action = DeferredActions.Delete });
 
