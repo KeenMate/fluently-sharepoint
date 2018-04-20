@@ -21,7 +21,8 @@ namespace KeenMate.FluentlySharePoint
 
 		public Guid CorrelationId { get; set; }
 		private ILogger Logger { get; set; } = new BlackHoleLogger();
-		public Func<Guid, string, string> LogMessageFormat { get; set; } = (correlationId, message) => $"{correlationId}: {message}";
+		public Func<Guid, string, string> LogMessageFormat { get; set; } = 
+			(correlationId, message) => $"{(correlationId != Guid.Empty ? $"{correlationId}: " : "")}{message}"; 
 
 		public Dictionary<string, Site> LoadedSites { get; } = new Dictionary<string, Site>(5);
 		public Dictionary<string, Web> LoadedWebs { get; } = new Dictionary<string, Web>(5);
