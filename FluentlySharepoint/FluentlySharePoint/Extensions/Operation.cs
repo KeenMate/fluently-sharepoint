@@ -16,7 +16,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			return operation;
 		}
 
-		public static CSOMOperation RemoveCorrelationId(this CSOMOperation operation)
+		public static CSOMOperation ClearCorrelationId(this CSOMOperation operation)
 		{
 			operation.CorrelationId = Guid.Empty;
 			return operation;
