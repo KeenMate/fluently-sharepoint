@@ -7,8 +7,9 @@ using System.Text;
 using System.Threading.Tasks;
 using KeenMate.FluentlySharePoint;
 using KeenMate.FluentlySharePoint.Extensions;
-using KeenMate.FluentlySharePoint_Nlog;
+using KeenMate.FluentlySharePoint.Interfaces;
 using Microsoft.SharePoint.Client;
+using TestConsole.Loggers;
 
 namespace TestConsole
 {
@@ -19,7 +20,7 @@ namespace TestConsole
 		public const string SiteUrl =
 				"https://keenmate.sharepoint.com/sites/demo/fluently-sharepoint/";
 
-		public static NlogLogger logger = new NlogLogger();
+		public static ILogger logger = new ConsoleLogger();
 
 		static void Main(string[] args)
 		{
@@ -43,7 +44,6 @@ namespace TestConsole
 
 		private static void CreateAndExecute()
 		{
-			logger.CorrelationId = Guid.NewGuid();
 			var op = SiteUrl
 				.Create(logger)
 				.SetOnlineCredentials(UserName, Password) // Available also with SecureString parameter
@@ -54,8 +54,6 @@ namespace TestConsole
 
 		private static void CreateExecuteAndReuse()
 		{
-			logger.CorrelationId = Guid.NewGuid();
-
 			logger.Info("Create, execute and reuse example");
 
 			var op = SiteUrl
@@ -77,7 +75,6 @@ namespace TestConsole
 
 		private static void ReuseExistingContext()
 		{
-			logger.CorrelationId = Guid.NewGuid();
 			logger.Info("Reuse existing context example");
 
 			ClientContext context = new ClientContext(SiteUrl);
