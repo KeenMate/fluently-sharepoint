@@ -61,7 +61,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			var field = DecideFieldSource(operation).GetByInternalNameOrTitle(columnName);
 
 			if (field == null)
-			if (type.HasValue) field.TypeAsString = type.ToString();
+				if (type.HasValue) field.TypeAsString = type.ToString();
 			if (!String.IsNullOrEmpty(displayName)) field.Title = displayName;
 			if (required.HasValue) field.Required = required.Value;
 			if (uniqueValues.HasValue) field.EnforceUniqueValues = uniqueValues.Value;
@@ -119,7 +119,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 		public static ListItemCollection GetItems(this CSOMOperation operation, CamlQuery query)
 		{
 			operation.LogInfo("Getting items");
-			operation.LogDebug("Query:\n{query.ViewXml}");
+			operation.LogDebug($"Query:\n{query.ViewXml}");
 
 			var listItems = operation.LastList.GetItems(query);
 
@@ -129,6 +129,11 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			return listItems;
 		}
 
+		/// <summary>
+		/// Remove all items from list
+		/// </summary>
+		/// <param name="operation"></param>
+		/// <returns></returns>
 		public static CSOMOperation DeleteItems(this CSOMOperation operation)
 		{
 			var caml = CamlQuery.CreateAllItemsQuery();
@@ -140,7 +145,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 
 		public static CSOMOperation DeleteItems(this CSOMOperation operation, string queryString)
 		{
-			var caml = new CamlQuery { ViewXml = queryString };
+			var caml = new CamlQuery { ViewXml = $"<View>{queryString}</View>" };
 
 			operation.DeleteItems(caml);
 
@@ -168,22 +173,22 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			{
 				Title = name,
 				ListTemplate = String.IsNullOrEmpty(template)
-					? operation.LastWeb.ListTemplates.GetByName("Custom List")
-					: operation.LastWeb.ListTemplates.GetByName(template)
+							? operation.LastWeb.ListTemplates.GetByName("Custom List")
+							: operation.LastWeb.ListTemplates.GetByName(template)
 			};
 
 			var list = operation.LastWeb.Lists.Add(listInformation);
 
 			operation.LastWeb.Context.Load(list);
 			operation.SetLevel(OperationLevels.List, list);
-			operation.ActionQueue.Enqueue(new DeferredAction{ClientObject = list, Action = DeferredActions.Load});
+			operation.ActionQueue.Enqueue(new DeferredAction { ClientObject = list, Action = DeferredActions.Load });
 
 			return operation;
 		}
 
 		public static CSOMOperation CreateList(this CSOMOperation operation, string name, ListTemplate template)
 		{
-			return operation.CreateList(name, operation.LastWeb.ListTemplates.First(t => t.ListTemplateTypeKind == (int) template).Name);
+			return operation.CreateList(name, operation.LastWeb.ListTemplates.First(t => t.ListTemplateTypeKind == (int)template).Name);
 		}
 
 		public static CSOMOperation DeleteList(this CSOMOperation operation, string name)
