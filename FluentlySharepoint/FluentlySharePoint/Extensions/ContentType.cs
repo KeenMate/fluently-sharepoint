@@ -1,20 +1,24 @@
 ﻿using System;
+using System.CodeDom;
+using System.ComponentModel;
 using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.SharePoint.Client;
 
 namespace KeenMate.FluentlySharePoint.Extensions
 {
+	[Description("NOT FULLY IMPLEMENTED YET, DO NOT USE")]
 	public static class ContentType
 	{
 		//todo logging
 		public static CSOMOperation LoadContentTypes(this CSOMOperation operation, params Expression<Func<Microsoft.SharePoint.Client.ContentType, object>>[] keysToLoad)
 		{
+			throw new NotImplementedException();
+
 			var contentTypes = DecideContentTypes(operation);
 
 			if (contentTypes != null)
 			{
-
 				operation.Context.Load(contentTypes, ct => ct.Include(type => type.Fields, type => type.FieldLinks, type => type.Name), ct => ct.Include(keysToLoad));
 			}
 
@@ -23,6 +27,8 @@ namespace KeenMate.FluentlySharePoint.Extensions
 
 		public static CSOMOperation SelectContentType(this CSOMOperation operation, string name)
 		{
+			throw new NotImplementedException();
+
 			var contentTypes = DecideContentTypes(operation);
 
 			if (contentTypes != null)
@@ -35,6 +41,8 @@ namespace KeenMate.FluentlySharePoint.Extensions
 
 		private static ContentTypeCollection DecideContentTypes(CSOMOperation operation)
 		{
+			throw new NotImplementedException();
+
 			ContentTypeCollection contentTypes = null;
 
 			switch (operation.OperationLevel)
