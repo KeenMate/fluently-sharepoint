@@ -94,6 +94,19 @@ namespace KeenMate.FluentlySharePoint
 			return operation;
 		}
 
+		public static CSOMOperation SetNetworkCredentials(this CSOMOperation operation, string username, string password)
+		{
+			operation.Context.Credentials = new NetworkCredential(username, password);
+			return operation;
+		}
+
+		public static CSOMOperation SetNetworkCredentials(this CSOMOperation operation, string domain, string username,
+			string password)
+		{
+			operation.Context.Credentials = new NetworkCredential(username, password, domain);
+			return operation;
+		}
+
 		/// <summary>
 		/// Set client context operation timeout
 		/// </summary>
