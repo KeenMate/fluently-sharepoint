@@ -16,6 +16,7 @@
     <Authors>kmBenjaminHorne</Authors>
     <Description>Sentence-like CSOM programming experience</Description>
     <FileVersion>0.4.1.0</FileVersion>
+    <PackageReleaseNotes>https://github.com/KeenMate/fluently-sharepoint/releases/tag/v0.4.1</PackageReleaseNotes>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netcore45|AnyCPU'">
