@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using KeenMate.FluentlySharePoint.Models;
 using Microsoft.SharePoint.Client;
@@ -81,7 +82,40 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			return operation;
 		}
 
-		public static CSOMOperation AddField(this CSOMOperation operation, string name, FieldType type, string displayName = "", bool required = false, bool uniqueValues = false, string defaultValue = "", string group = "")
+		public static CSOMOperation AddChoiceField(this CSOMOperation operation, string name, List<string> choices, ChoiceTypes choiceType, string displayName = "", bool required = false, bool uniqueValues = false, string defaultValue = "", string group = "")
+		{
+			return operation.AddField(name, FieldType.Choice, displayName, required, uniqueValues, defaultValue, group, choices: choices, choiceType:choiceType);
+		}
+
+		public static CSOMOperation AddNumberField(this CSOMOperation operation, string name, string displayName = "",
+			bool required = false, bool uniqueValues = false, string defaultValue = "", string group = "",
+			bool percentage = false, int decimals = 2, int? min = null, int? max = null)
+		{
+			return operation.AddField(name, FieldType.Number, displayName, required, uniqueValues, defaultValue, group,
+				percentage, decimals, max, min);
+		}
+
+		public static CSOMOperation AddTextField(this CSOMOperation operation, string name, string displayName = "",
+			bool required = false, bool uniqueValues = false, string defaultValue = "", string group = "")
+		{
+			return operation.AddField(name, FieldType.Text, displayName, required, uniqueValues,
+				defaultValue, group);
+		}
+
+		public static CSOMOperation AddLookupField(this CSOMOperation operation, string name, string list, string lookupField, string displayName = "", bool required = false, bool uniqueValues = false, string defaultValue = "", string group = "")
+		{
+			return operation.AddField(name, FieldType.Lookup, displayName, required, uniqueValues, defaultValue, group, lookupList:list, lookupField:lookupField);
+		}
+
+		/* Is uniqueValues required for boolean field? */
+		public static CSOMOperation AddBooleanField(this CSOMOperation operation, string name, string displayName = "",
+			bool required = false, bool uniqueValues = false, bool? defaultValue = null, string group = "")
+		{
+			return operation.AddField(name, FieldType.Boolean, displayName, required, uniqueValues, defaultValue.HasValue ? defaultValue.Value.ToString() : "", group);
+		}
+
+		//Generic method for all column types
+		private static CSOMOperation AddField(this CSOMOperation operation, string name, FieldType type, string displayName = "", bool required = false, bool uniqueValues = false, string defaultValue = "", string group = "", bool percentage = false, int decimals = 2, int? min = null, int? max = null, List<string> choices = null, ChoiceTypes choiceType = ChoiceTypes.Default, string lookupList = "", string lookupField = "")
 		{
 			operation.LogInfo($"Adding column {name}");
 
@@ -93,7 +127,15 @@ namespace KeenMate.FluentlySharePoint.Extensions
 				Required = required,
 				UniqueValues = uniqueValues,
 				Group = group,
-				Default = defaultValue
+				Default = defaultValue,
+				Percentage = percentage,
+				Decimals = decimals,
+				Min = min,
+				Max = max,
+				Choices = choices,
+				Format = choiceType,
+				List = lookupList,
+				ShowField = lookupField
 			};
 
 			DecideFieldSource(operation).AddFieldAsXml(fieldInformation.ToXml(), true, AddFieldOptions.AddFieldInternalNameHint);
@@ -158,7 +200,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			operation.LogDebug($"Query:\n{query}");
 
 			var items = operation.LastList.GetItems(query);
-			 
+
 			operation.Context.Load(items);
 			operation.ActionQueue.Enqueue(new DeferredAction { ClientObject = items, Action = DeferredActions.Delete });
 

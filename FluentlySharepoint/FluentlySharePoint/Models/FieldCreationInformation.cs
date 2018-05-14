@@ -1,7 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Xml;
+using System.Xml.Schema;
 using System.Xml.Serialization;
+using KeenMate.FluentlySharePoint.Enums;
 using Microsoft.SharePoint.Client;
 
 namespace KeenMate.FluentlySharePoint.Models
@@ -33,17 +37,53 @@ namespace KeenMate.FluentlySharePoint.Models
 		[XmlAttribute]
 		public bool Required { get; set; }
 
+		[XmlAttribute]
+		public ChoiceTypes Format { get; set; }
+
+		public bool ChoiceTypeSpecified => Format != ChoiceTypes.Default;
+
 		[XmlAttribute("EnforceUniqueValues")]
 		public bool UniqueValues { get; set; }
 
-		[XmlElement] public string Default { get; set; }
+		[XmlAttribute]
+		public bool Percentage { get; set; }
+
+		[XmlAttribute]
+		public int Decimals { get; set; }
+
+		[XmlAttribute]
+		public string List { get; set; }
+
+		[XmlAttribute]
+		public string  ShowField { get; set; }
+
+		[XmlAttribute]
+		public RelationshipDeleteBehaviorType RelationshipDeleteBehaviorType { get; set; }
+		[XmlIgnore] public int? Min { get; set; }
+		[XmlAttribute("Min")]
+		public int MinSerializable { get => Min ?? 0; set => Min = value; }
+		public bool MinSerializableSpecified => Min.HasValue;
+
+		[XmlIgnore] public int? Max { get; set; }
+		[XmlAttribute("Max")]
+		public int MaxSerializable { get => Max ?? 0; set => Max = value; }
+		public bool MaxSerializableSpecified => Max.HasValue;
+
+		[XmlElement]
+		public string Default { get; set; }
+
+		[XmlArray("CHOICES")]
+		[XmlArrayItem("CHOICE")]
+		public List<string> Choices { get; set; }
 
 		public string ToXml()
 		{
 			var serializer = new XmlSerializer(GetType());
-			var settings = new XmlWriterSettings();
-			settings.Indent = true;
-			settings.OmitXmlDeclaration = true;
+			var settings = new XmlWriterSettings
+			{
+				Indent = true,
+				OmitXmlDeclaration = true
+			};
 			var emptyNamepsaces = new XmlSerializerNamespaces(new[] { XmlQualifiedName.Empty });
 
 			using (var stream = new StringWriter())
