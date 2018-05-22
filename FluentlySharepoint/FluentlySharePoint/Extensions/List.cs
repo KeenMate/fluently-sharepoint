@@ -92,14 +92,14 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			bool percentage = false, int decimals = 2, int? min = null, int? max = null)
 		{
 			return operation.AddField(name, FieldType.Number, displayName, required, uniqueValues, defaultValue, group,
-				percentage, decimals, max, min);
+				null, percentage, decimals, max, min);
 		}
 
 		public static CSOMOperation AddTextField(this CSOMOperation operation, string name, string displayName = "",
-			bool required = false, bool uniqueValues = false, string defaultValue = "", string group = "")
+			bool required = false, bool uniqueValues = false, string defaultValue = "", string group = "", int? maxLength = null)
 		{
 			return operation.AddField(name, FieldType.Text, displayName, required, uniqueValues,
-				defaultValue, group);
+				defaultValue, group, maxLength);
 		}
 
 		public static CSOMOperation AddLookupField(this CSOMOperation operation, string name, string list, string lookupField, string displayName = "", bool required = false, bool uniqueValues = false, string defaultValue = "", string group = "")
@@ -115,7 +115,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 		}
 
 		//Generic method for all column types
-		private static CSOMOperation AddField(this CSOMOperation operation, string name, FieldType type, string displayName = "", bool required = false, bool uniqueValues = false, string defaultValue = "", string group = "", bool percentage = false, int decimals = 2, int? min = null, int? max = null, List<string> choices = null, ChoiceTypes choiceType = ChoiceTypes.Default, string lookupList = "", string lookupField = "")
+		private static CSOMOperation AddField(this CSOMOperation operation, string name, FieldType type, string displayName = "", bool required = false, bool uniqueValues = false, string defaultValue = "", string group = "", int? maxLength = null, bool percentage = false, int decimals = 2, int? min = null, int? max = null, List<string> choices = null, ChoiceTypes choiceType = ChoiceTypes.Default, string lookupList = "", string lookupField = "")
 		{
 			operation.LogInfo($"Adding column {name}");
 
@@ -135,7 +135,8 @@ namespace KeenMate.FluentlySharePoint.Extensions
 				Choices = choices,
 				Format = choiceType,
 				List = lookupList,
-				ShowField = lookupField
+				ShowField = lookupField,
+				MaxLegth = maxLength
 			};
 
 			DecideFieldSource(operation).AddFieldAsXml(fieldInformation.ToXml(), true, AddFieldOptions.AddFieldInternalNameHint);
