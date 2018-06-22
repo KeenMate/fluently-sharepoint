@@ -106,7 +106,7 @@ namespace TestConsole
 			var op = SiteUrl
 				.Create(new ConsoleLogger())
 				.SetOnlineCredentials(UserName, Password)
-				.CreateWeb($"New Web - {DateTime.Now:HH-mm}", $"NewWeb-{DateTime.Now:HH-mm}")
+				.CreateWeb($"New Web - {DateTime.Now:HH-mm}", (int)Lcid.English, $"NewWeb-{DateTime.Now:HH-mm}")
 				.CreateList("Customers")
 				.AddNumberField("Internal number")
 				.AddBooleanField("EU Company")
@@ -121,6 +121,9 @@ namespace TestConsole
 				.Execute();
 		}
 
+		/// <summary>
+		/// Not working. We cannot find out how to send recepients to the standard workflow for it to work
+		/// </summary>
 		private static void StartStandardWorkflow()
 		{
 			var op = "http://dev-sp2016-01:7100/"
@@ -143,7 +146,7 @@ namespace TestConsole
 			var x = op.LastList.WorkflowAssociations;
 			op.Context.Load(x);
 			var items = op.LastList.GetItems(new CamlQuery());
-			op.GetItems()
+			
 			op.Context.Load(items);
 			op.Execute();
 

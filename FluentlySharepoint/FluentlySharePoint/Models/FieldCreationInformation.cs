@@ -36,6 +36,11 @@ namespace KeenMate.FluentlySharePoint.Models
 
 		[XmlAttribute]
 		public bool Required { get; set; }
+		
+		[XmlIgnore] public int? MaxLegth { get; set; }
+		[XmlAttribute("MaxLength")]
+		public int MaxLengthSerializable { get => MaxLegth ?? 0; set => MaxLegth = value; }
+		public bool MaxLengthSerializableSpecified => MaxLegth.HasValue;
 
 		[XmlAttribute]
 		public ChoiceTypes Format { get; set; }
@@ -56,6 +61,7 @@ namespace KeenMate.FluentlySharePoint.Models
 
 		[XmlAttribute]
 		public string  ShowField { get; set; }
+		public bool ShowFieldSpecified => FieldType == FieldType.Lookup;
 
 		[XmlAttribute]
 		public RelationshipDeleteBehaviorType RelationshipDeleteBehaviorType { get; set; }

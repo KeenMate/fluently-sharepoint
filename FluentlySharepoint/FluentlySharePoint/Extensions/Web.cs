@@ -76,7 +76,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			return operation;
 		}
 
-		public static CSOMOperation CreateWeb(this CSOMOperation operation, string name, string url = "", string template = "")
+		public static CSOMOperation CreateWeb(this CSOMOperation operation, string name, int? lcid, string url = "", string template = "")
 		{
 			operation.LogInfo($"Creating web {name}");
 
@@ -84,7 +84,8 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			{
 				Title = name,
 				Url = String.IsNullOrEmpty(url) ? name : url,
-				WebTemplate = template
+				WebTemplate = template,
+				Language = (int) ((uint?)lcid ?? operation.DecideWeb().Language)
 			};
 
 			var web = operation.DecideWeb().Webs.Add(webInformation);
