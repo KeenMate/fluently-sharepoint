@@ -61,7 +61,7 @@ namespace KeenMate.FluentlySharePoint.Assets {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to &lt;View&gt;{0}&lt;RowLimit&gt;{1}&lt;/RowLimit&gt;&lt;/View&gt;.
+        ///   Looks up a localized string similar to &lt;View  Scope=&quot;RecursiveAll&quot;&gt;{0}&lt;RowLimit&gt;{1}&lt;/RowLimit&gt;&lt;/View&gt;.
         /// </summary>
         public static string WrappedWithRowLimit {
             get {
