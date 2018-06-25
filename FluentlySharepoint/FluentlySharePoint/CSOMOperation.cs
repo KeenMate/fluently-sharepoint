@@ -35,7 +35,9 @@ namespace KeenMate.FluentlySharePoint
 		public ContentType LastContentType { get; private set; }
 
 		public TaxonomySession TaxonomySession { get; set; }
-		
+		public TermStore TaxonomyStore { get; set; }
+
+
 		public CSOMOperation(ClientContext context) : this(context, null)
 		{
 		}

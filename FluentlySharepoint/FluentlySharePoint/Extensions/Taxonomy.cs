@@ -1,4 +1,5 @@
-﻿using Microsoft.SharePoint.Client.Taxonomy;
+﻿using System;
+using Microsoft.SharePoint.Client.Taxonomy;
 
 namespace KeenMate.FluentlySharePoint.Extensions
 {
@@ -13,6 +14,21 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			return operation;
 		}
 
-		
+		public static CSOMOperation SelectTaxonomyStore(this CSOMOperation operation, string storeName="", Guid storeGuid = new Guid())
+		{
+			if (!string.IsNullOrEmpty(storeName))
+				operation.TaxonomyStore = operation.TaxonomySession.TermStores.GetByName(storeName);
+			else if (storeGuid != Guid.Empty)
+				operation.TaxonomyStore = operation.TaxonomySession.TermStores.GetById(storeGuid);
+			else
+				operation.TaxonomyStore = operation.TaxonomySession.GetDefaultSiteCollectionTermStore();
+
+			operation.Context.Load(operation.TaxonomyStore);
+
+			return operation;
+		}
+
+
+
 	}
 }

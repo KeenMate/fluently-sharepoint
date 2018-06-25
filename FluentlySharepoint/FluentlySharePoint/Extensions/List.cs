@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using Microsoft.SharePoint.Client;
 using KeenMate.FluentlySharePoint.Assets;
 
@@ -56,7 +57,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 		/// <remarks>
 		/// If you need bigger control over the CAML query use alternative <seealso cref="GetItems(KeenMate.FluentlySharePoint.CSOMOperation,CamlQuery)"/> method with CamlQuery parameter
 		/// </remarks>
-		public static ListItemCollection GetItems(this CSOMOperation operation, string queryString, int? rowLimit = null)
+		public static ListItemCollection GetItems(this CSOMOperation operation, string queryString, int? rowLimit = null, params Expression<Func<ListItem, object>>[] retrievals)
 		{
 			string caml = queryString;
 			if (rowLimit != null)
@@ -68,7 +69,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			}
 			var ca = new CamlQuery { ViewXml = caml };
 
-			return operation.GetItems(ca);
+			return operation.GetItems(ca, retrievals);
 		}
 
 		/// <summary>
@@ -76,9 +77,9 @@ namespace KeenMate.FluentlySharePoint.Extensions
 		/// </summary>
 		/// <param name="operation"></param>
 		/// <returns>Loaded list items in standard CSOM <see cref="ListItemCollection"/></returns>
-		public static ListItemCollection GetItems(this CSOMOperation operation)
+		public static ListItemCollection GetItems(this CSOMOperation operation, params Expression<Func<ListItem, object>>[] retrievals)
 		{
-			return GetItems(operation, CamlQuery.CreateAllItemsQuery());
+			return GetItems(operation, CamlQuery.CreateAllItemsQuery(), retrievals);
 		}
 
 		/// <summary>
@@ -86,15 +87,20 @@ namespace KeenMate.FluentlySharePoint.Extensions
 		/// </summary>
 		/// <param name="operation">Beware! Context executing method</param>
 		/// <param name="query">Query used in GetItems method</param>
+		/// <param name="retrievals"></param>
 		/// <returns>Loaded list items in standard CSOM <see cref="ListItemCollection"/></returns>
-		public static ListItemCollection GetItems(this CSOMOperation operation, CamlQuery query)
+		public static ListItemCollection GetItems(this CSOMOperation operation, CamlQuery query, params Expression<Func<ListItem, object>>[] retrievals)
 		{
 			operation.LogInfo("Getting items");
 			operation.LogDebug($"Query:\n{query.ViewXml}");
 
 			var listItems = operation.LastList.GetItems(query);
+			
+			if(retrievals != null)
+				operation.Context.Load(listItems, collection => collection.Include(retrievals));
+			else
+				operation.Context.Load(listItems);
 
-			operation.Context.Load(listItems);
 			operation.Execute();
 
 			return listItems;
