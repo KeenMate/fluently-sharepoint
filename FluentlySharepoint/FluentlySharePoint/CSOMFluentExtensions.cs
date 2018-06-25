@@ -68,6 +68,19 @@ namespace KeenMate.FluentlySharePoint
 		}
 
 		/// <summary>
+		/// Sets authentication mode for the context
+		/// </summary>
+		/// <param name="operation"></param>
+		/// <param name="mode">Desired <see cref="ClientAuthenticationMode"/></param>
+		/// <returns></returns>
+		public static CSOMOperation SetAuthenticationMode(this CSOMOperation operation, ClientAuthenticationMode mode)
+		{
+			operation.Context.AuthenticationMode = mode;
+
+			return operation;
+		}
+
+	/// <summary>
 		/// Set online credentials with username and plain password
 		/// </summary>
 		/// <param name="operation"></param>
@@ -88,6 +101,7 @@ namespace KeenMate.FluentlySharePoint
 		/// <returns></returns>
 		public static CSOMOperation SetOnlineCredentials(this CSOMOperation operation, string username, SecureString password)
 		{
+			operation.SetAuthenticationMode(ClientAuthenticationMode.Default);
 			operation.LogDebug("Setting SharePoint Online credentials");
 			operation.Context.Credentials = new SharePointOnlineCredentials(username, password);
 
