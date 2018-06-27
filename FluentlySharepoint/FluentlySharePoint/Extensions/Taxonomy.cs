@@ -9,17 +9,16 @@ namespace KeenMate.FluentlySharePoint.Extensions
 		{
 			operation.TaxonomySession = TaxonomySession.GetTaxonomySession(operation.Context);
 			operation.Context.Load(operation.TaxonomySession);
-			operation.Execute();
 
 			return operation;
 		}
 
-		public static CSOMOperation SelectTaxonomyStore(this CSOMOperation operation, string storeName="", Guid storeGuid = new Guid())
+		public static CSOMOperation SelectTaxonomyStore(this CSOMOperation operation, string storeName="", Guid? storeGuid = null)
 		{
 			if (!string.IsNullOrEmpty(storeName))
 				operation.TaxonomyStore = operation.TaxonomySession.TermStores.GetByName(storeName);
-			else if (storeGuid != Guid.Empty)
-				operation.TaxonomyStore = operation.TaxonomySession.TermStores.GetById(storeGuid);
+			else if (storeGuid.HasValue)
+				operation.TaxonomyStore = operation.TaxonomySession.TermStores.GetById(storeGuid.Value);
 			else
 				operation.TaxonomyStore = operation.TaxonomySession.GetDefaultSiteCollectionTermStore();
 
@@ -28,7 +27,10 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			return operation;
 		}
 
-
-
+		public static CSOMOperation CreateTaxonomyGroup(this CSOMOperation operation, string name)
+		{
+			operation.TaxonomyStore.CreateGroup()
+		}
+		
 	}
 }
