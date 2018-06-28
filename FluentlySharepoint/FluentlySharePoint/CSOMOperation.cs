@@ -4,6 +4,7 @@ using System.Linq;
 using KeenMate.FluentlySharePoint.Assets;
 using KeenMate.FluentlySharePoint.Interfaces;
 using KeenMate.FluentlySharePoint.Loggers;
+using KeenMate.FluentlySharePoint.Models;
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
 
@@ -34,10 +35,8 @@ namespace KeenMate.FluentlySharePoint
 		public List LastList { get; private set; }
 		public ContentType LastContentType { get; private set; }
 
-		public TaxonomySession TaxonomySession { get; set; }
-		public TermStore TaxonomyStore { get; set; }
-
-
+		public TaxonomyOperation TaxonomyOperation { get; set; }
+		
 		public CSOMOperation(ClientContext context) : this(context, null)
 		{
 		}
