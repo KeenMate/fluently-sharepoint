@@ -16,6 +16,7 @@ using KeenMate.FluentlySharePoint.Interfaces;
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.WorkflowServices;
 using TestConsole.Loggers;
+using TestConsole.WorkflowModels;
 
 namespace TestConsole
 {
@@ -25,6 +26,10 @@ namespace TestConsole
 		public const string Password = "Discipline042008";
 		public const string SiteUrl =
 				"https://keenmate.sharepoint.com/sites/demo/fluently-sharepoint/";
+
+		public const string OnPremiseDomain = "";
+		public const string OnPremiseUserName = "";
+		public const string OnPremisePassword = "";
 
 		public static ILogger logger = new ConsoleLogger();
 
@@ -38,7 +43,9 @@ namespace TestConsole
 
 			//MeasuredOperation(CreateWebAndSeveralListInIt);
 
-			MeasuredOperation(StartStandardWorkflow);
+			//MeasuredOperation(StartStandardWorkflow);
+
+			MeasuredOperation(CreateTermSetAndTerm);
 		}
 
 		private static void MeasuredOperation(Action operation)
@@ -122,7 +129,7 @@ namespace TestConsole
 		}
 
 		/// <summary>
-		/// Not working. We cannot find out how to send recepients to the standard workflow for it to work
+		/// Not working. We cannot find out a correct way how to send recepients to the standard workflow for it to work
 		/// </summary>
 		private static void StartStandardWorkflow()
 		{
@@ -131,7 +138,7 @@ namespace TestConsole
 				.SetupContext(context =>
 				{
 					context.Credentials =
-						new NetworkCredential() { Domain = "KM", Password = "3.18Fuchsie", UserName = "ondrej.valenta" };
+						new NetworkCredential() { Domain = OnPremiseDomain, Password = OnPremisePassword, UserName = OnPremiseUserName };
 				});
 			//.SetOnlineCredentials(UserName, Password);
 			op.Fail((operation, exception) =>
@@ -204,7 +211,38 @@ namespace TestConsole
 			//new WorkflowServicesManager().GetWorkflowInstanceService().
 		}
 
+		private static void CreateTermSetAndTerm()
+		{
+			var op = "http://cpas.shp.cz.keenmate.com"
+				.Create(new ConsoleLogger())
+				.SetupContext(context =>
+				{
+					context.Credentials =
+						new NetworkCredential() { Domain = OnPremiseDomain, Password = OnPremisePassword, UserName = OnPremiseUserName };
+				});
+			//.SetOnlineCredentials(UserName, Password);
+			op.Fail((operation, exception) =>
+			{
+				Console.WriteLine(exception.Message);
+				return operation;
+			});
 
+			var customProperties = new Dictionary<string, string>();
+			customProperties.Add("Parent", "Parent Term;Parent Term 1");
+			customProperties.Add("Custom property 1", $"{DateTime.Now:G}");
+
+			op.OpenTaxonomySession()
+				.SelectTaxonomyStore()
+				.LoadTermGroup("Term group 1")
+				.CreateTermSet("Term group 1 - Term set")
+				.CreateTermGroup("Term group 2")
+				.CreateTermSet("Term set")
+				.CreateTerm("Parent term")
+				.CreateTerm("Term", customProperties: customProperties, localProperties: customProperties)
+				.SelectTermGroup("Term group 1")
+				.CreateTermSet("Term group 1 - Term set 2")
+				.Execute();
+		}
 	}
 
 
