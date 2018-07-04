@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using KeenMate.FluentlySharePoint.Assets;
 using KeenMate.FluentlySharePoint.Interfaces;
 using KeenMate.FluentlySharePoint.Loggers;
 using KeenMate.FluentlySharePoint.Models;
+using KeenMate.FluentlySharePoint.Models.Taxonomy;
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
 
@@ -187,6 +189,13 @@ namespace KeenMate.FluentlySharePoint
 		public CSOMOperation SetLogMessageFormat(Func<Guid, string, string> logMessageFormat)
 		{
 			LogMessageFormat = logMessageFormat;
+			return this;
+		}
+
+		public CSOMOperation Load<T>(T clientObject, params Expression<Func<T, object>>[] retrievals) where T: ClientObject
+		{
+			Context.Load(clientObject, retrievals);
+
 			return this;
 		}
 
