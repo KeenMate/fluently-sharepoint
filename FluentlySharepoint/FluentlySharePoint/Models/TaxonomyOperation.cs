@@ -13,6 +13,7 @@ namespace KeenMate.FluentlySharePoint.Models.Taxonomy
 	public class TaxonomyOperation
 	{
 		public Dictionary<string, TermGroup> LoadedTermGroups { get; } = new Dictionary<string, TermGroup>(5);
+		public Dictionary<string, TermSet> LoadedTermSets { get; } = new Dictionary<string, TermSet>(5);
 		public Dictionary<string, Term> LoadedTerms { get; } = new Dictionary<string, Term>(5);
 
 		public LockLevel LevelLock { get; set; }

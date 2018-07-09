@@ -10,6 +10,39 @@ namespace KeenMate.FluentlySharePoint.Extensions
 {
 	public static class Taxonomy
 	{
+		public static class DefaultRetrievals
+		{
+			public static Expression<Func<TermGroup, object>>[] TermGroup = new Expression<Func<TermGroup, object>>[]
+			{
+				g=>g.ContributorPrincipalNames,
+				g=>g.Description,
+				g=>g.GroupManagerPrincipalNames,
+				g=>g.IsSiteCollectionGroup,
+				g=>g.IsSystemGroup,
+			};
+
+			public static Expression<Func<TermSet, object>>[] TermSet = new Expression<Func<TermSet, object>>[]
+			{
+				s=>s.Contact,
+				s=>s.Description,
+				s=>s.IsOpenForTermCreation,
+				s=>s.Names,
+				s=>s.Stakeholders,
+			};
+
+			public static Expression<Func<Term, object>>[] Term = new Expression<Func<Term, object>>[]
+			{
+				t=>t.Description,
+				t=>t.IsDeprecated,
+				t=>t.IsKeyword,
+				t=>t.IsRoot,
+				t=>t.LocalCustomProperties,
+				t=>t.CustomProperties,
+				t=>t.TermsCount,
+			};
+		}
+		
+
 		private static void EnsureTaxonomyOperation(CSOMOperation operation)
 		{
 			operation.TaxonomyOperation = operation.TaxonomyOperation ?? new TaxonomyOperation();
@@ -95,12 +128,12 @@ namespace KeenMate.FluentlySharePoint.Extensions
 		/// <param name="guid">Id of the term group</param>
 		/// <remarks>This method does not add loaded group into <see cref="TaxonomyOperation.LoadedTermGroups"/> because the name is not available yet</remarks>
 		/// <returns></returns>
-		public static CSOMOperation LoadTermGroup(this CSOMOperation operation, Guid guid)
+		public static CSOMOperation LoadTermGroup(this CSOMOperation operation, Guid guid, params Expression<Func<TermGroup, object>>[] retrievals)
 		{
 			var op = operation.TaxonomyOperation;
 
 			op.LastTermGroup = op.LastTermStore.Groups.GetById(guid);
-			operation.Load(op.LastTermGroup);
+			operation.Load(op.LastTermGroup, retrievals.Length == 0 ? DefaultRetrievals.TermGroup : retrievals);
 			
 			return operation;
 		}
@@ -110,14 +143,14 @@ namespace KeenMate.FluentlySharePoint.Extensions
 		/// </summary>
 		/// <param name="operation"></param>
 		/// <param name="name">Name of the term group</param>
-		/// <param name="retrivals"></param>
+		/// <param name="retrievals">When not retrievals are supplied <see cref="DefaultRetrievals.TermGroup"/> are used.</param>
 		/// <returns></returns>
-		public static CSOMOperation LoadTermGroup(this CSOMOperation operation, string name, params Expression<Func<TermGroup, object>>[] retrivals)
+		public static CSOMOperation LoadTermGroup(this CSOMOperation operation, string name, params Expression<Func<TermGroup, object>>[] retrievals)
 		{
 			var op = operation.TaxonomyOperation;
 
 			op.LastTermGroup = op.LastTermStore.Groups.GetByName(name);
-			operation.Load(op.LastTermGroup, retrivals);
+			operation.Load(op.LastTermGroup, retrievals.Length == 0 ? DefaultRetrievals.TermGroup : retrievals);
 
 			if (op.LoadedTermGroups.ContainsKey(name.ToLower()))
 			{
@@ -145,5 +178,23 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			return operation;
 		}
 
+		public static CSOMOperation LoadTermSet(this CSOMOperation operation, string name, params Expression<Func<TermSet, object>>[] retrievals)
+		{
+			var op = operation.TaxonomyOperation;
+			var key = name.ToLower();
+			op.LastTermSet = op.LastTermGroup.TermSets.GetByName(name);
+			operation.Load(op.LastTermSet, retrievals.Length == 0 ? DefaultRetrievals.TermSet : retrievals);
+
+			if (op.LoadedTermSets.ContainsKey(key))
+			{
+				op.LoadedTermSets[key] = op.LastTermSet;
+			}
+			else
+			{
+				op.LoadedTermSets.Add(key, op.LastTermSet);
+			}
+
+			return operation;
+		}
 	}
 }
