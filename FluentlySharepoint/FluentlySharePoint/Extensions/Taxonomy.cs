@@ -45,7 +45,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 
 		private static void EnsureTaxonomyOperation(CSOMOperation operation)
 		{
-			operation.TaxonomyOperation = operation.TaxonomyOperation ?? new TaxonomyOperation();
+			operation.TaxonomyOperation = operation.TaxonomyOperation ?? new TaxonomyOperation(operation);
 		}
 
 		public static CSOMOperation LockTerm(this CSOMOperation operation)
@@ -57,8 +57,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 
 		public static CSOMOperation OpenTaxonomySession(this CSOMOperation operation)
 		{
-			if(operation.TaxonomyOperation == null)
-				operation.TaxonomyOperation = new TaxonomyOperation();
+			EnsureTaxonomyOperation(operation);
 
 			operation.TaxonomyOperation.Session = TaxonomySession.GetTaxonomySession(operation.Context);
 			operation.Context.Load(operation.TaxonomyOperation.Session);
@@ -196,5 +195,52 @@ namespace KeenMate.FluentlySharePoint.Extensions
 
 			return operation;
 		}
+
+		public static CSOMOperation LoadTerm(this CSOMOperation operation, string name, params Expression<Func<TermSet, object>>[] retrievals)
+		{
+			var op = operation.TaxonomyOperation;
+			var key = name.ToLower();
+			op.LastTerm = op.LastTermSet.Terms.GetByName(name);
+			operation.Load(op.LastTermSet, retrievals.Length == 0 ? DefaultRetrievals.TermSet : retrievals);
+
+			if (op.LoadedTermSets.ContainsKey(key))
+			{
+				op.LoadedTermSets[key] = op.LastTermSet;
+			}
+			else
+			{
+				op.LoadedTermSets.Add(key, op.LastTermSet);
+			}
+
+			return operation;
+		}
+
+		//public static CSOMOperation GetTermSets(this CSOMOperation operation, string name, params Expression<Func<TermSet, object>>[] retrievals)
+		//{
+		//	var op = operation.TaxonomyOperation;
+
+		//	op.Session.GetTermSetsByName(new LabelMatchInformation(operation.Context)
+		//	{
+		//		StringMatchOption = StringMatchOption.StartsWith,
+		//		TermLabel = name,
+
+		//	});
+
+		//	var key = name.ToLower();
+		//	op.LastTermSet = op.LastTermGroup.TermSets.GetByName(name);
+		//	operation.Load(op.LastTermSet, retrievals.Length == 0 ? DefaultRetrievals.TermSet : retrievals);
+
+		//	if (op.LoadedTermSets.ContainsKey(key))
+		//	{
+		//		op.LoadedTermSets[key] = op.LastTermSet;
+		//	}
+		//	else
+		//	{
+		//		op.LoadedTermSets.Add(key, op.LastTermSet);
+		//	}
+
+		//	return operation;
+		//}
+
 	}
 }

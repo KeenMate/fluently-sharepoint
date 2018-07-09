@@ -24,7 +24,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Microsoft.SharePointOnline.CSOM" Version="16.1.7414.1200" />
+    <PackageReference Include="Microsoft.SharePointOnline.CSOM" Version="16.1.7813.1200" />
   </ItemGroup>
 
   <ItemGroup>

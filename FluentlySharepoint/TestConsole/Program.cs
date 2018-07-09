@@ -13,9 +13,9 @@ using KeenMate.FluentlySharePoint;
 using KeenMate.FluentlySharePoint.Enums;
 using KeenMate.FluentlySharePoint.Extensions;
 using KeenMate.FluentlySharePoint.Interfaces;
+using KeenMate.FluentlySharePoint.Loggers;
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.WorkflowServices;
-using TestConsole.Loggers;
 using TestConsole.WorkflowModels;
 
 namespace TestConsole
@@ -27,9 +27,9 @@ namespace TestConsole
 		public const string SiteUrl =
 				"https://keenmate.sharepoint.com/sites/demo/fluently-sharepoint/";
 
-		public const string OnPremiseDomain = "";
-		public const string OnPremiseUserName = "";
-		public const string OnPremisePassword = "";
+		public const string OnPremiseDomain = "km";
+		public const string OnPremiseUserName = "ondrej.valenta";
+		public const string OnPremisePassword = "3.18Fuchsie";
 
 		public static ILogger logger = new ConsoleLogger();
 
@@ -233,14 +233,14 @@ namespace TestConsole
 
 			op.OpenTaxonomySession()
 				.SelectTaxonomyStore()
-				.LoadTermGroup("Term group 1")
-				.CreateTermSet("Term group 1 - Term set")
-				.CreateTermGroup("Term group 2")
-				.CreateTermSet("Term set")
-				.CreateTerm("Parent term")
-				.CreateTerm("Term", customProperties: customProperties, localProperties: customProperties)
-				.SelectTermGroup("Term group 1")
-				.CreateTermSet("Term group 1 - Term set 2")
+				.LoadTermGroup("Term group 2")
+				.CreateTermSet("Term group 2 - Term set 1")
+				//.CreateTermGroup("Term group 2")
+				//.CreateTermSet("Term set")
+				//.CreateTerm("Parent term")
+				.CreateTerm($"Term - {DateTime.Now:s}", customProperties: customProperties, localProperties: customProperties)
+				//.SelectTermGroup("Term group 1")
+				//.CreateTermSet("Term group 1 - Term set 2")
 				.Execute();
 		}
 	}

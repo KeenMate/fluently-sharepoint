@@ -25,8 +25,8 @@ namespace KeenMate.FluentlySharePoint
 
 		public Guid CorrelationId { get; set; }
 		private ILogger Logger { get; set; } = new BlackHoleLogger();
-		public Func<Guid, string, string> LogMessageFormat { get; set; } = 
-			(correlationId, message) => $"{(correlationId != Guid.Empty ? $"{correlationId}: " : "")}{message}"; 
+		public Func<Guid, string, string> LogMessageFormat { get; set; } =
+			(correlationId, message) => $"{(correlationId != Guid.Empty ? $"{correlationId}: " : "")}{message}";
 
 		public Dictionary<string, Site> LoadedSites { get; } = new Dictionary<string, Site>(5);
 		public Dictionary<string, Web> LoadedWebs { get; } = new Dictionary<string, Web>(5);
@@ -38,7 +38,7 @@ namespace KeenMate.FluentlySharePoint
 		public ContentType LastContentType { get; private set; }
 
 		public TaxonomyOperation TaxonomyOperation { get; set; }
-		
+
 		public CSOMOperation(ClientContext context) : this(context, null)
 		{
 		}
@@ -46,7 +46,7 @@ namespace KeenMate.FluentlySharePoint
 		public CSOMOperation(ClientContext context, ILogger logger = null)
 		{
 			Context = context;
-			Logger = logger??Logger;
+			Logger = logger ?? Logger;
 
 			setupOperation(Context);
 		}
@@ -169,13 +169,13 @@ namespace KeenMate.FluentlySharePoint
 			switch (clientObject)
 			{
 				case Web w:
-					LoadedWebs[w.ServerRelativeUrl] = w;
+					LoadedWebs.AddOrUpdate(w.ServerRelativeUrl, w);
 					break;
 				case Site s:
-					LoadedSites[s.ServerRelativeUrl] = s; 
+					LoadedSites.AddOrUpdate(s.ServerRelativeUrl, s);
 					break;
 				case List l:
-					LoadedLists[l.Title] = l;
+					LoadedLists.AddOrUpdate(l.Title, l);
 					break;
 				case WebCollection wc:
 					wc.ToList().ForEach(ProcessLoaded);
@@ -192,7 +192,7 @@ namespace KeenMate.FluentlySharePoint
 			return this;
 		}
 
-		public CSOMOperation Load<T>(T clientObject, params Expression<Func<T, object>>[] retrievals) where T: ClientObject
+		public CSOMOperation Load<T>(T clientObject, params Expression<Func<T, object>>[] retrievals) where T : ClientObject
 		{
 			Context.Load(clientObject, retrievals);
 
