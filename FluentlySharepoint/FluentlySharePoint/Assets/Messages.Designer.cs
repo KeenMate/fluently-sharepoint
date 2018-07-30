@@ -79,7 +79,7 @@ namespace KeenMate.FluentlySharePoint.Assets {
         }
         
         /// <summary>
-        ///   Looks up a localized string similar to Failed to execute the context.
+        ///   Looks up a localized string similar to Failed to execute the context with message: {0}.
         /// </summary>
         internal static string FailedToExecute {
             get {

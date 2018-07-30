@@ -20,6 +20,7 @@ namespace KeenMate.FluentlySharePoint
 
 		private LevelLock LevelLock { get; } = new LevelLock();
 		public int DefaultTimeout { get; private set; }
+		public bool ThrowOnError { get; private set; }
 
 		public ClientContext Context { get; set; }
 
@@ -242,7 +243,7 @@ namespace KeenMate.FluentlySharePoint
 			}
 			catch (Exception ex)
 			{
-				LogWarn(Messages.FailedToExecute);
+				LogWarn(string.Format(Messages.FailedToExecute, ex.Message));
 				FailHandler?.Invoke(this, ex);
 				successful = false;
 				return this;

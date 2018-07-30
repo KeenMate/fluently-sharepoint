@@ -124,7 +124,7 @@
     <value>About to execute the context</value>
   </data>
   <data name="FailedToExecute" xml:space="preserve">
-    <value>Failed to execute the context</value>
+    <value>Failed to execute the context with message: {0}</value>
   </data>
   <data name="SuccededToExecute" xml:space="preserve">
     <value>Succeded to execute the context</value>
