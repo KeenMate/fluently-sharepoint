@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using KeenMate.FluentlySharePoint.Assets;
+using KeenMate.FluentlySharePoint.Helpers;
 using KeenMate.FluentlySharePoint.Interfaces;
 using KeenMate.FluentlySharePoint.Loggers;
 using KeenMate.FluentlySharePoint.Models;
@@ -14,6 +15,119 @@ namespace KeenMate.FluentlySharePoint
 {
 	public class CSOMOperation : IDisposable
 	{
+		public static class DefaultRetrievals
+		{
+			public static Expression<Func<Site, object>>[] Site = new Expression<Func<Site, object>>[]
+			{
+				g => g.Id,
+				g => g.ServerRelativeUrl,
+				g => g.ReadOnly,
+				g => g.Url
+			};
+
+			public static Expression<Func<WebCollection, object>>[] WebCollection =
+				new Expression<Func<WebCollection, object>>[]
+				{
+					g => g.Include(w => Web)
+				};
+
+			public static Expression<Func<Web, object>>[] Web = new Expression<Func<Web, object>>[]
+			{
+				g => g.Id,
+				g => g.ServerRelativeUrl,
+				g => g.Title,
+				g => g.Url,
+				g => g.Description,
+				g => g.Language,
+				g => g.IsMultilingual,
+				g => g.WebTemplate
+			};
+
+			public static Expression<Func<List, object>>[] List = new Expression<Func<List, object>>[]
+			{
+				g => g.Id,
+				g => g.Title,
+				g => g.Description,
+				g => g.EnableAssignToEmail,
+				g => g.EnableAttachments,
+				g => g.EnableFolderCreation,
+				g => g.EnableMinorVersions,
+				g => g.EnableModeration,
+				g => g.EnableVersioning,
+				g => g.Hidden,
+				g => g.IsApplicationList,
+				g => g.IsCatalog,
+				g => g.IsEnterpriseGalleryLibrary,
+				g => g.IsPrivate,
+				g => g.IsSiteAssetsLibrary,
+				g => g.IsSystemList,
+				g => g.ItemCount,
+				g => g.RootFolder
+			};
+
+			public static Expression<Func<WebTemplateCollection, object>>[] WebTemplateCollection =
+				new Expression<Func<WebTemplateCollection, object>>[]
+				{
+					g => g.Include(WebTemplate)
+				};
+
+			public static Expression<Func<WebTemplate, object>>[] WebTemplate = new Expression<Func<WebTemplate, object>>[]
+			{
+				g => g.Title,
+				g => g.Name,
+				g => g.Description,
+				g => g.DisplayCategory,
+				g => g.Id,
+				g => g.IsRootWebOnly,
+				g => g.IsSubWebOnly,
+				g => g.Lcid
+			};
+
+			public static Expression<Func<ListTemplateCollection, object>>[] ListTemplateCollection =
+				new Expression<Func<ListTemplateCollection, object>>[]
+				{
+					g => g.Include(t => ListTemplate)
+				};
+
+			public static Expression<Func<ListTemplate, object>>[] ListTemplate = new Expression<Func<ListTemplate, object>>[]
+			{
+				g => g.Name,
+				g => g.InternalName,
+				g => g.Description,
+				g => g.AllowsFolderCreation,
+				g => g.IsCustomTemplate,
+				g => g.BaseType
+			};
+
+		}
+
+		public static string[] UrlCharsToRemove =
+			new[] { "\"", "\"", "`", " ", "?", "!", "@", "#", "$", "%", "^", "*", "(", ")", "[", "]", "<", ">" };
+
+		public static string[] UrlCharsToReplace = new[] { " ", ".", ",", "/", "\\", ";", "&", "|", };
+		public static string UrlReplaceChar = "-";
+
+		public static Func<string, string> UrlNormalizeFunctor = (title) =>
+		{
+			title = title.RemoveDiacritics();
+
+			foreach (var c in UrlCharsToRemove)
+			{
+				title = title.Replace(c, UrlReplaceChar);
+			}
+
+			foreach (var c in UrlCharsToReplace)
+			{
+				title = title.Replace(c, UrlReplaceChar);
+
+			}
+			// not proud of this one, please, forgive me :)
+			return title;
+		};
+
+		public uint DefaultLcid { get; private set; } = 1033;
+		public int DefaultCompatibilityLevel { get; private set; } = 15;
+
 		public string OriginalWebUrl { get; }
 		public Web RootWeb { get; set; }
 		public OperationLevels OperationLevel { get; protected set; } = OperationLevels.Web;
@@ -41,8 +155,7 @@ namespace KeenMate.FluentlySharePoint
 		public TaxonomyOperation TaxonomyOperation { get; set; }
 
 		public CSOMOperation(ClientContext context) : this(context, null)
-		{
-		}
+		{}
 
 		public CSOMOperation(ClientContext context, ILogger logger = null)
 		{
@@ -63,11 +176,12 @@ namespace KeenMate.FluentlySharePoint
 		public CSOMOperation(string webUrl, ILogger logger = null) : this(webUrl)
 		{
 			Logger = logger ?? Logger;
-			LogInfo("Operation created");
+			LogInfo("CSOM Operation created and ready to rock'n'roll");
 		}
 
 		private void setupOperation(ClientContext context)
 		{
+			LogDebug($"Setting default timeout to: {Context.RequestTimeout}");
 			DefaultTimeout = Context.RequestTimeout;
 
 			LastSite = Context.Site;
@@ -75,16 +189,35 @@ namespace KeenMate.FluentlySharePoint
 
 			LogDebug("Loading initial data");
 
-			LoadWebRequired(LastWeb);
-			LoadSiteRequired(LastSite);
+			LoadWebWithDefaultRetrievals(LastWeb);
+			LoadSiteWithDefaultRetrievals(LastSite);
 
 			ActionQueue.Enqueue(new DeferredAction { ClientObject = LastSite, Action = DeferredActions.Load });
 			ActionQueue.Enqueue(new DeferredAction { ClientObject = LastWeb, Action = DeferredActions.Load });
 		}
 
-		public Action<ClientContext> Executor { get; set; }
+		/// <summary>
+		/// Global on being executed handler
+		/// </summary>
+		public Action<ClientContext> OnBeingExecuted { get; set; }
 
-		public Func<CSOMOperation, Exception, CSOMOperation> FailHandler { get; set; }
+		/// <summary>
+		/// Global on fail handler
+		/// </summary>
+		public Func<CSOMOperation, Exception, CSOMOperation> OnFail { get; set; }
+
+		/// <summary>
+		/// Should an exception be rethrown on execution failure
+		/// </summary>
+		/// <param name="yesNo"></param>
+		/// <returns></returns>
+		public CSOMOperation ThrowExceptionOnError(bool yesNo)
+		{
+			ThrowOnError = yesNo;
+			return this;
+		}
+
+		#region Logging
 
 		public void LogTrace(string message) => Logger.Trace(LogMessageFormat(CorrelationId, message));
 		public void LogDebug(string message) => Logger.Debug(LogMessageFormat(CorrelationId, message));
@@ -93,10 +226,27 @@ namespace KeenMate.FluentlySharePoint
 		public void LogError(string message) => Logger.Error(LogMessageFormat(CorrelationId, message));
 		public void LogFatal(string message) => Logger.Fatal(LogMessageFormat(CorrelationId, message));
 
+
+		#endregion
+
+		public CSOMOperation SetDefaultLCID(uint lcid)
+		{
+			DefaultLcid = lcid;
+			return this;
+		}
+
+		public CSOMOperation SetDefaultCompatibilityLevel(int compatibilityLevel)
+		{
+			DefaultCompatibilityLevel = compatibilityLevel;
+			return this;
+		}
+
 		public Queue<DeferredAction> ActionQueue { get; } = new Queue<DeferredAction>(10);
 
 		public CSOMOperation LockLevels(params OperationLevels[] levels)
 		{
+			LogTrace($"Locking levels to: {levels}");
+
 			LevelLock.SetLocks(levels, true);
 
 			return this;
@@ -104,6 +254,8 @@ namespace KeenMate.FluentlySharePoint
 
 		public CSOMOperation UnlockLevels(params OperationLevels[] levels)
 		{
+			LogTrace($"Unlocking levels: {levels}");
+
 			LevelLock.SetLocks(levels, false);
 
 			return this;
@@ -111,6 +263,7 @@ namespace KeenMate.FluentlySharePoint
 
 		public void SetLevel(OperationLevels level, ClientObject levelObject)
 		{
+			LogTrace($"Setting operation level to: {level}");
 			switch (levelObject)
 			{
 				case Site s when level == OperationLevels.Site && !LevelLock.Site:
@@ -132,23 +285,29 @@ namespace KeenMate.FluentlySharePoint
 			}
 		}
 
-		public void LoadSiteRequired(Site site)
+		public void LoadSiteWithDefaultRetrievals(Site site)
 		{
+			LogTrace($"Loading site with default retrievals");
+
 			Context.Load(site, s => s.ServerRelativeUrl);
 		}
 
-		public void LoadWebRequired(Web web)
+		public void LoadWebWithDefaultRetrievals(Web web)
 		{
-			Context.Load(web, w => w.ServerRelativeUrl, w => w.ListTemplates, w => w.ContentTypes);
+			LogTrace($"Loading web with default retrievals");
+			Context.Load(web, DefaultRetrievals.Web);
 		}
 
 		public void LoadListRequired(List list)
 		{
-			Context.Load(list, l => l.Title, l => l.RootFolder);
+			LogTrace($"Loading list with default retrievals");
+
+			Context.Load(list, DefaultRetrievals.List);
 		}
 
 		private void ProcessDelete(ClientObject clientObject)
 		{
+			LogTrace("Processing deleted object");
 			switch (clientObject)
 			{
 				case Web w:
@@ -167,6 +326,7 @@ namespace KeenMate.FluentlySharePoint
 
 		private void ProcessLoaded(ClientObject clientObject)
 		{
+			LogTrace("Processing loaded object");
 			switch (clientObject)
 			{
 				case Web w:
@@ -195,19 +355,25 @@ namespace KeenMate.FluentlySharePoint
 
 		public CSOMOperation Load<T>(T clientObject, params Expression<Func<T, object>>[] retrievals) where T : ClientObject
 		{
+			LogTrace($"Loading object of type: {clientObject.GetType().Name}");
 			Context.Load(clientObject, retrievals);
 
 			return this;
 		}
 
-		public CSOMOperation Execute()
+		public CSOMOperation Execute(Func<Exception, CSOMOperation> localFailHandler = null)
 		{
-			executeContext(out var success); // no sense to continue processing when the first execute failed
+			LogInfo(Messages.AboutToExecute);
+
+			executeContext(localFailHandler, out var success); // no sense to continue processing when the first execute failed
 
 			if (!success) return this;
 
+			LogDebug($"Items in action queue: {ActionQueue.Count}");
+			var i = 1;
 			while (ActionQueue.Count > 0)
 			{
+				LogDebug($"Processing action: {i} of {ActionQueue.Count}");
 				var action = ActionQueue.Dequeue();
 
 				switch (action.Action)
@@ -219,23 +385,30 @@ namespace KeenMate.FluentlySharePoint
 						ProcessDelete(action.ClientObject);
 						break;
 				}
+
+				i++;
 			}
 
-			return executeContext(out success);
+			return executeContext(localFailHandler, out success);
 		}
 
-		private CSOMOperation executeContext(out bool successful)
+		public string NormalizeUrl(string title)
 		{
-			LogInfo(Messages.AboutToExecute);
+			return UrlNormalizeFunctor.Invoke(title);
+		}
 
-			if (Executor != null)
+		private CSOMOperation executeContext(Func<Exception, CSOMOperation> localFailHandler, out bool successful)
+		{
+			LogTrace($"ThrowOnError set to: {ThrowOnError}, OnBeingExecuted defined: {OnBeingExecuted != null}, LocalFailHandler defined: {localFailHandler != null}, OnFail defined: {OnFail != null}");
+			if (OnBeingExecuted != null)
 			{
 				LogDebug(Messages.AboutToCallExecutor);
-				Executor.Invoke(Context);
+				OnBeingExecuted.Invoke(Context);
 			}
 
 			try
 			{
+				LogTrace("Executing context");
 				Context.ExecuteQuery();
 				LogDebug(Messages.SuccededToExecute);
 				successful = true;
@@ -244,8 +417,20 @@ namespace KeenMate.FluentlySharePoint
 			catch (Exception ex)
 			{
 				LogWarn(string.Format(Messages.FailedToExecute, ex.Message));
-				FailHandler?.Invoke(this, ex);
 				successful = false;
+
+				if (localFailHandler != null)
+				{
+					LogTrace("Calling local fail handler");
+					localFailHandler.Invoke(ex);
+					return this;
+				}
+
+				if (ThrowOnError)
+					throw;
+
+				OnFail?.Invoke(this, ex);
+
 				return this;
 			}
 		}

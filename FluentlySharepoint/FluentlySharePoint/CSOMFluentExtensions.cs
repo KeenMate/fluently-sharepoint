@@ -155,7 +155,7 @@ namespace KeenMate.FluentlySharePoint
 		public static CSOMOperation OnEachRequest(this CSOMOperation operation, Action<ClientContext> executor)
 		{
 			operation.LogDebug("Operation executor set");
-			operation.Executor = executor;
+			operation.OnBeingExecuted = executor;
 			return operation;
 		}
 
@@ -163,12 +163,12 @@ namespace KeenMate.FluentlySharePoint
 		/// On fail handler executed in all-catch block of clientContext.Execute() command
 		/// </summary>
 		/// <param name="operation">This operation</param>
-		/// <param name="handler">Handler that is assigned to CSOMOperation.FailHandler property</param>
+		/// <param name="handler">Handler that is assigned to CSOMOperation.OnFail property</param>
 		/// <returns>This operation</returns>
 		public static CSOMOperation Fail(this CSOMOperation operation, Func<CSOMOperation, Exception, CSOMOperation> handler)
 		{
 			operation.LogDebug("Fail handler set");
-			operation.FailHandler = handler;
+			operation.OnFail = handler;
 			return operation;
 		}
 	}
