@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using KeenMate.FluentlySharePoint.Assets;
+using KeenMate.FluentlySharePoint.Enums;
 using KeenMate.FluentlySharePoint.Helpers;
 using KeenMate.FluentlySharePoint.Interfaces;
 using KeenMate.FluentlySharePoint.Loggers;
@@ -10,6 +11,7 @@ using KeenMate.FluentlySharePoint.Models;
 using KeenMate.FluentlySharePoint.Models.Taxonomy;
 using Microsoft.SharePoint.Client;
 using Microsoft.SharePoint.Client.Taxonomy;
+using ListTemplate = Microsoft.SharePoint.Client.ListTemplate;
 
 namespace KeenMate.FluentlySharePoint
 {
@@ -125,8 +127,8 @@ namespace KeenMate.FluentlySharePoint
 			return title;
 		};
 
-		public uint DefaultLcid { get; private set; } = 1033;
-		public int DefaultCompatibilityLevel { get; private set; } = 15;
+		public uint DefaultLcid { get; private set; } = (uint)Lcid.English;
+		public int DefaultCompatibilityLevel { get; private set; } = (int)SharePointVersions.SP2016;
 
 		public string OriginalWebUrl { get; }
 		public Web RootWeb { get; set; }
