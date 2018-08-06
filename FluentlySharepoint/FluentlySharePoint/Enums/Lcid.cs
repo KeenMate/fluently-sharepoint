@@ -3,7 +3,6 @@
 	public enum Lcid
 	{
 		English = 1033,
-		EnglishUS = 1033,
 		EnglishUK = 2057,
 		French = 1036,
 		Czech = 1029,
@@ -16,5 +15,12 @@
 		Spanish = 3082,
 		Swedish = 1053,
 		Chinese = 2052
+	}
+
+	public enum SharePointVersions
+	{
+		SP2010 = 14,
+		SP2013 = 15,
+		SP2016 = 16
 	}
 }
