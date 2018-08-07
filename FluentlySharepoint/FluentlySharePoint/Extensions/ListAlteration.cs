@@ -12,23 +12,25 @@ namespace KeenMate.FluentlySharePoint.Extensions
 	{
 		public static CSOMOperation CreateList(this CSOMOperation operation, string name, string template = null)
 		{
-			operation.LogInfo($"Creating list {name}");
+			throw new NeedFixException("ListCreationInformation does not contain ListTemplate but TemplateId");
 
-			ListCreationInformation listInformation = new ListCreationInformation
-			{
-				Title = name,
-				ListTemplate = String.IsNullOrEmpty(template)
-					? operation.LastWeb.ListTemplates.GetByName("Custom List")
-					: operation.LastWeb.ListTemplates.GetByName(template)
-			};
+			//operation.LogInfo($"Creating list {name}");
 
-			var list = operation.LastWeb.Lists.Add(listInformation);
+			//ListCreationInformation listInformation = new ListCreationInformation
+			//{
+			//	Title = name,
+			//	ListTemplate = String.IsNullOrEmpty(template)
+			//		? operation.LastWeb.ListTemplates.GetByName("Custom List")
+			//		: operation.LastWeb.ListTemplates.GetByName(template)
+			//};
 
-			operation.LastWeb.Context.Load(list);
-			operation.SetLevel(OperationLevels.List, list);
-			operation.ActionQueue.Enqueue(new DeferredAction { ClientObject = list, Action = DeferredActions.Load });
+			//var list = operation.LastWeb.Lists.Add(listInformation);
 
-			return operation;
+			//operation.LastWeb.Context.Load(list);
+			//operation.SetLevel(OperationLevels.List, list);
+			//operation.ActionQueue.Enqueue(new DeferredAction { ClientObject = list, Action = DeferredActions.Load });
+
+			//return operation;
 		}
 
 		public static CSOMOperation CreateList(this CSOMOperation operation, string name, ListTemplate template)

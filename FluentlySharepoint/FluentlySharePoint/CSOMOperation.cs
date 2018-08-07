@@ -50,7 +50,6 @@ namespace KeenMate.FluentlySharePoint
 				g => g.Id,
 				g => g.Title,
 				g => g.Description,
-				g => g.EnableAssignToEmail,
 				g => g.EnableAttachments,
 				g => g.EnableFolderCreation,
 				g => g.EnableMinorVersions,
@@ -59,12 +58,15 @@ namespace KeenMate.FluentlySharePoint
 				g => g.Hidden,
 				g => g.IsApplicationList,
 				g => g.IsCatalog,
-				g => g.IsEnterpriseGalleryLibrary,
 				g => g.IsPrivate,
 				g => g.IsSiteAssetsLibrary,
-				g => g.IsSystemList,
 				g => g.ItemCount,
 				g => g.RootFolder
+
+#warning Not supported in RTM version
+				//g => g.IsSystemList,
+				//g => g.EnableAssignToEmail,
+				//g => g.IsEnterpriseGalleryLibrary,
 			};
 
 			public static Expression<Func<WebTemplateCollection, object>>[] WebTemplateCollection =

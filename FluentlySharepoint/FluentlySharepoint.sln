@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.27004.2006
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentlySharePoint", "FluentlySharePoint\FluentlySharePoint.csproj", "{ECC43A57-526F-4707-9E7C-209C6206D84B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "FluentlySharePoint.OnPremise", "FluentlySharePoint\FluentlySharePoint.OnPremise.csproj", "{ECC43A57-526F-4707-9E7C-209C6206D84B}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TestConsole", "TestConsole\TestConsole.csproj", "{81F610CA-D801-40B6-B59B-3730651F1A33}"
 EndProject

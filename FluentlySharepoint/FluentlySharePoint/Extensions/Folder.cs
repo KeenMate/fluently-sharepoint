@@ -6,28 +6,33 @@ namespace KeenMate.FluentlySharePoint.Extensions
 	{
 		public static CSOMOperation CreateFolder(this CSOMOperation operation, string remotePath, bool overwrite = true)
 		{
-			operation.LogInfo($"Creating folder: {remotePath}");
+#warning Class ResourcePath does not exists
+			throw new NeedFixException("Class ResourcePath does not exists");
+			//operation.LogInfo($"Creating folder: {remotePath}");
 
-			var list = operation.LastList;
-			var resourceFolderPath = ResourcePath.FromDecodedUrl(list.RootFolder.Name + "/" + remotePath);
+			//var list = operation.LastList;
+			//var resourceFolderPath = ResourcePath.FromDecodedUrl(list.RootFolder.Name + "/" + remotePath);
 
-			var folder = list.RootFolder.Folders.AddUsingPath(resourceFolderPath, new FolderCollectionAddParameters { Overwrite = overwrite });
+			//var folder = list.RootFolder.Folders.AddUsingPath(resourceFolderPath, new FolderCollectionAddParameters { Overwrite = overwrite });
 
-			folder.Context.Load(folder);
+			//folder.Context.Load(folder);
 
-			return operation;
+			//return operation;
 		}
 
 		public static CSOMOperation DeleteFolder(this CSOMOperation operation, string remotePath)
 		{
-			operation.LogInfo($"Deleting folder: {remotePath}");
+#warning Class ResourcePath does not exists
 
-			var list = operation.LastList;
-			var resourceFolderPath = ResourcePath.FromDecodedUrl(list.RootFolder.Name + "/" + remotePath);
+			throw new NeedFixException("Class ResourcePath does not exists");
+			//operation.LogInfo($"Deleting folder: {remotePath}");
 
-			list.RootFolder.Folders.GetByPath(resourceFolderPath).DeleteObject();
+			//var list = operation.LastList;
+			//var resourceFolderPath = ResourcePath.FromDecodedUrl(list.RootFolder.Name + "/" + remotePath);
 
-			return operation;
+			//list.RootFolder.Folders.GetByPath(resourceFolderPath).DeleteObject();
+
+			//return operation;
 		}
 	}
 }

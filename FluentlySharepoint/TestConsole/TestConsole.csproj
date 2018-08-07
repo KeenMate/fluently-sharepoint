@@ -2,11 +2,13 @@
 
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net40;net45</TargetFrameworks>
+    <TargetFramework>net451</TargetFramework>
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FluentlySharePoint\FluentlySharePoint.csproj" />
+    <Compile Remove="Loggers\**" />
+    <EmbeddedResource Remove="Loggers\**" />
+    <None Remove="Loggers\**" />
   </ItemGroup>
 
   <ItemGroup>
@@ -16,7 +18,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Loggers\" />
+    <ProjectReference Include="..\FluentlySharePoint\FluentlySharePoint.OnPremise.csproj" />
   </ItemGroup>
 
 </Project>

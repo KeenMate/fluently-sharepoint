@@ -14,11 +14,12 @@ namespace KeenMate.FluentlySharePoint.Extensions
 		{
 			public static Expression<Func<TermGroup, object>>[] TermGroup = new Expression<Func<TermGroup, object>>[]
 			{
-				g=>g.ContributorPrincipalNames,
 				g=>g.Description,
-				g=>g.GroupManagerPrincipalNames,
 				g=>g.IsSiteCollectionGroup,
 				g=>g.IsSystemGroup,
+#warning Not supported in RTM version
+				//g=>g.ContributorPrincipalNames,
+				//g=>g.GroupManagerPrincipalNames,
 			};
 
 			public static Expression<Func<TermSet, object>>[] TermSet = new Expression<Func<TermSet, object>>[]
@@ -26,8 +27,10 @@ namespace KeenMate.FluentlySharePoint.Extensions
 				s=>s.Contact,
 				s=>s.Description,
 				s=>s.IsOpenForTermCreation,
-				s=>s.Names,
 				s=>s.Stakeholders,
+#warning Not supported in RTM version
+				//s=>s.Names,
+
 			};
 
 			public static Expression<Func<Term, object>>[] Term = new Expression<Func<Term, object>>[]

@@ -47,11 +47,14 @@ namespace KeenMate.FluentlySharePoint.Extensions
 		public static CSOMOperation LoadWebByUrl(this CSOMOperation operation, string url,
 			params Expression<Func<Web, object>>[] retrievals)
 		{
-			operation.LogDebug($"Loading web with url: {url}");
+#warning Method OpenWebUsingPath does not exists in RTM version and ResourcePath does not exist
+			throw new NeedFixException("Class ResourcePath does not exists");
 
-			var web = operation.LastSite.OpenWebUsingPath(ResourcePath.FromDecodedUrl(url));
+			//operation.LogDebug($"Loading web with url: {url}");
 
-			return LoadWeb(operation, web, retrievals);
+			//var web = operation.LastSite.OpenWebUsingPath(ResourcePath.FromDecodedUrl(url));
+
+			//return LoadWeb(operation, web, retrievals);
 		}
 
 		public static CSOMOperation LoadWeb(this CSOMOperation operation, Web web,
