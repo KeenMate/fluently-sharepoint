@@ -5,13 +5,13 @@
     <RootNamespace>KeenMate.FluentlySharePoint</RootNamespace>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <PackageId>KeenMate.FluentlySharePoint.OnPremise</PackageId>
-    <Version>0.5</Version>
+    <Version>0.5.0-beta.1</Version>
     <Company>KEEN|MATE</Company>
     <Copyright>Copyright © KEEN|MATE 2018</Copyright>
     <PackageLicenseUrl>https://github.com/KeenMate/fluently-sharepoint/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://github.com/KeenMate/fluently-sharepoint</PackageProjectUrl>
     <RepositoryUrl>https://github.com/KeenMate/fluently-sharepoint/tree/OnPremise2016</RepositoryUrl>
-    <PackageTags>sharepoint csom fluently</PackageTags>
+    <PackageTags>sharepoint csom fluently onpremise</PackageTags>
     <AssemblyVersion>0.5.0.0</AssemblyVersion>
     <Authors>kmBenjaminHorne</Authors>
     <Description>Sentence-like CSOM programming experience for SharePoint 2016 OnPremise using original SharePoint 2016 RTM CSOM NuGet package</Description>
