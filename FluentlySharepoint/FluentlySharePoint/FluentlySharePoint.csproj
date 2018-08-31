@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFrameworks>net40;net45</TargetFrameworks>
     <RootNamespace>KeenMate.FluentlySharePoint</RootNamespace>
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>KeenMate.FluentlySharePoint</PackageId>
     <Version>0.5-beta.1</Version>
     <Company>KEEN|MATE</Company>
