@@ -22,15 +22,9 @@ namespace TestConsole
 {
 	class Program
 	{
-		public const string UserName = "trent.reznor@keenmate.com";
-		public const string Password = "Discipline042008";
 		public const string SiteUrl =
 				"https://keenmate.sharepoint.com/sites/demo/fluently-sharepoint/";
-
-		public const string OnPremiseDomain = "km";
-		public const string OnPremiseUserName = "ondrej.valenta";
-		public const string OnPremisePassword = "3.18Fuchsie";
-
+		
 		public static ILogger logger = new ConsoleLogger();
 
 		static void Main(string[] args)
@@ -45,7 +39,7 @@ namespace TestConsole
 
 			//MeasuredOperation(StartStandardWorkflow);
 
-			MeasuredOperation(CreateTermSetAndTerm);
+			//MeasuredOperation(CreateTermSetAndTerm);
 		}
 
 		private static void MeasuredOperation(Action operation)
@@ -63,7 +57,7 @@ namespace TestConsole
 		{
 			var op = SiteUrl
 				.Create(logger)
-				.SetOnlineCredentials(UserName, Password) // Available also with SecureString parameter
+				.SetOnlineCredentials(ClientSecrets.Username, ClientSecrets.Password) // Available also with SecureString parameter
 				.Execute();
 
 			logger.Trace($"Default timeout: {op.Context.RequestTimeout}");
@@ -75,7 +69,7 @@ namespace TestConsole
 
 			var op = SiteUrl
 				.Create(logger)
-				.SetOnlineCredentials(UserName, Password) // Available also with SecureString parameter
+				.SetOnlineCredentials(ClientSecrets.Username, ClientSecrets.Password) // Available also with SecureString parameter
 				.Execute();
 
 			var listTitle = "Documents";
@@ -95,7 +89,7 @@ namespace TestConsole
 			logger.Info("Reuse existing context example");
 
 			ClientContext context = new ClientContext(SiteUrl);
-			context.Credentials = new SharePointOnlineCredentials(UserName, Password.ToSecureString());
+			context.Credentials = new SharePointOnlineCredentials(ClientSecrets.Username, ClientSecrets.Password.ToSecureString());
 
 			var listTitle = "Documents";
 
@@ -112,7 +106,7 @@ namespace TestConsole
 		{
 			var op = SiteUrl
 				.Create(new ConsoleLogger())
-				.SetOnlineCredentials(UserName, Password)
+				.SetOnlineCredentials(ClientSecrets.Username, ClientSecrets.Password)
 				.CreateWeb($"New Web - {DateTime.Now:HH-mm}", (int)Lcid.English, $"NewWeb-{DateTime.Now:HH-mm}")
 				.CreateList("Customers")
 				.AddNumberField("Internal number")
@@ -138,9 +132,9 @@ namespace TestConsole
 				.SetupContext(context =>
 				{
 					context.Credentials =
-						new NetworkCredential() { Domain = OnPremiseDomain, Password = OnPremisePassword, UserName = OnPremiseUserName };
+						new NetworkCredential() { Domain = ClientSecrets.Domain, Password = ClientSecrets.Password, UserName = ClientSecrets.Username };
 				});
-			//.SetOnlineCredentials(UserName, Password);
+			//.SetOnlineCredentials(ClientSecrets.Username, ClientSecrets.Password);
 			op.Fail((operation, exception) =>
 			{
 				Console.WriteLine(exception.Message);
@@ -218,9 +212,9 @@ namespace TestConsole
 				.SetupContext(context =>
 				{
 					context.Credentials =
-						new NetworkCredential() { Domain = OnPremiseDomain, Password = OnPremisePassword, UserName = OnPremiseUserName };
+						new NetworkCredential() { Domain = ClientSecrets.Domain, Password = ClientSecrets.Password, UserName = ClientSecrets.Username };
 				});
-			//.SetOnlineCredentials(UserName, Password);
+			//.SetOnlineCredentials(ClientSecrets.Username, ClientSecrets.Password);
 			op.Fail((operation, exception) =>
 			{
 				Console.WriteLine(exception.Message);
