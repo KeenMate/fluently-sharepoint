@@ -206,7 +206,7 @@ namespace KeenMate.FluentlySharePoint
 		/// <summary>
 		/// Global on fail handler
 		/// </summary>
-		public Func<CSOMOperation, Exception, CSOMOperation> OnFail { get; set; }
+		public Func<CSOMOperation, Exception, CSOMOperation> OnFail { get; private set; }
 
 		/// <summary>
 		/// Should an exception be rethrown on execution failure

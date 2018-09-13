@@ -35,6 +35,8 @@ namespace TestConsole
 
 			//MeasuredOperation(ReuseExistingContext);
 
+			MeasuredOperation(GetListItems);
+
 			//MeasuredOperation(CreateWebAndSeveralListInIt);
 
 			//MeasuredOperation(StartStandardWorkflow);
@@ -100,6 +102,22 @@ namespace TestConsole
 
 			logger.Info($"Total items of list {listTitle} with list.ItemCount: {items.Count}");
 
+		}
+
+		private static void GetListItems()
+		{
+			var op = SiteUrl
+				.Create(logger)
+				.SetOnlineCredentials(ClientSecrets.Username, ClientSecrets.Password)
+				.LoadList("Reservations");
+
+			// Not working, items lack data in any field
+			var items = op.GetItems();
+
+			var itemsFull = op.LoadedLists["Reservations"]
+				.GetItems(CamlQuery.CreateAllItemsQuery());
+
+			op.Execute();
 		}
 
 		private static void CreateWebAndSeveralListInIt()
