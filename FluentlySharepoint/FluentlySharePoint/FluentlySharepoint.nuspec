@@ -15,10 +15,10 @@
 	<repository url="https://github.com/KeenMate/fluently-sharepoint" />
 	<dependencies>
       <group targetFramework=".NETFramework4.0">
-        <dependency id="Microsoft.SharePointOnline.CSOM" version="16.1.7813.1200" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.SharePoint2016.CSOM" version="16.0.4351.1000" exclude="Build,Analyzers" />
       </group>
       <group targetFramework=".NETFramework4.5">
-        <dependency id="Microsoft.SharePointOnline.CSOM" version="16.1.7813.1200" exclude="Build,Analyzers" />
+        <dependency id="Microsoft.SharePoint2016.CSOM" version="16.0.4351.1000" exclude="Build,Analyzers" />
       </group>
     </dependencies>
   </metadata>

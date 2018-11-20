@@ -23,7 +23,7 @@ namespace TestConsole
 	class Program
 	{
 		public const string SiteUrl =
-				"https://keenmate.sharepoint.com/sites/demo/fluently-sharepoint/";
+				"http://dev-sp2016-01:7000/";
 
 		public static ILogger logger = new ConsoleLogger();
 
@@ -50,10 +50,10 @@ namespace TestConsole
 		{
 			CSOMOperation op = SiteUrl
 				.Create(logger)
-				.SetOnlineCredentials(ClientSecrets.Username, ClientSecrets.Password)
+				.SetNetworkCredentials(ClientSecrets.Username, ClientSecrets.Password)
 				.Execute();
 
-			op.LoadList("Documents")
+			op.LoadList("Dokumenty")
 				.Execute();
 
 			ListItem item = op.GetItem(1);
