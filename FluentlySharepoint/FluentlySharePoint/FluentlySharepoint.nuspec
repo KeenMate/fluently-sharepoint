@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>KeenMate.FluentlySharePoint</id>
+    <version>$packageVersion$</version>
+    <authors>kmBenjaminHorne</authors>
+    <owners>kmBenjaminHorne</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://github.com/KeenMate/fluently-sharepoint/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/KeenMate/fluently-sharepoint</projectUrl>
+    <description>Sentence-like CSOM programming experience</description>
+    <releaseNotes>https://github.com/KeenMate/fluently-sharepoint/releases/tag/v0.5-beta.1</releaseNotes>
+    <copyright>Copyright © KEEN|MATE 2017</copyright>
+    <tags>sharepoint csom fluently</tags>
+	<repository url="https://github.com/KeenMate/fluently-sharepoint" />
+	<dependencies>
+      <group targetFramework=".NETFramework4.0">
+        <dependency id="Microsoft.SharePointOnline.CSOM" version="16.1.7813.1200" exclude="Build,Analyzers" />
+      </group>
+      <group targetFramework=".NETFramework4.5">
+        <dependency id="Microsoft.SharePointOnline.CSOM" version="16.1.7813.1200" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src=".\bin\Debug\net40\FluentlySharePoint.dll" target="lib\net40\FluentlySharePoint.dll" />
+    <file src=".\bin\Debug\net45\FluentlySharePoint.dll" target="lib\net45\FluentlySharePoint.dll" />
+  </files>
+</package>

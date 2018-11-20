@@ -69,6 +69,12 @@ namespace KeenMate.FluentlySharePoint
 				//g => g.IsEnterpriseGalleryLibrary,
 			};
 
+			public static Expression<Func<ListItem, object>>[] ListItem = {
+				i => i.Id,
+				i => i.DisplayName,
+				i => i.ContentType
+			};
+
 			public static Expression<Func<WebTemplateCollection, object>>[] WebTemplateCollection =
 				new Expression<Func<WebTemplateCollection, object>>[]
 				{
@@ -102,7 +108,6 @@ namespace KeenMate.FluentlySharePoint
 				g => g.IsCustomTemplate,
 				g => g.BaseType
 			};
-
 		}
 
 		public static string[] UrlCharsToRemove =
@@ -136,6 +141,20 @@ namespace KeenMate.FluentlySharePoint
 		public Web RootWeb { get; set; }
 		public OperationLevels OperationLevel { get; protected set; } = OperationLevels.Web;
 
+		#region Callbacks
+
+		/// <summary>
+		/// Global on being executed handler
+		/// </summary>
+		public Action<ClientContext> OnBeingExecuted { get; set; }
+
+		/// <summary>
+		/// Global on fail handler
+		/// </summary>
+		public Func<CSOMOperation, Exception, CSOMOperation> OnFail { get; private set; }
+
+		#endregion
+
 		private LevelLock LevelLock { get; } = new LevelLock();
 		public int DefaultTimeout { get; private set; }
 		public bool ThrowOnError { get; private set; }
@@ -159,7 +178,7 @@ namespace KeenMate.FluentlySharePoint
 		public TaxonomyOperation TaxonomyOperation { get; set; }
 
 		public CSOMOperation(ClientContext context) : this(context, null)
-		{}
+		{ }
 
 		public CSOMOperation(ClientContext context, ILogger logger = null)
 		{
@@ -172,6 +191,9 @@ namespace KeenMate.FluentlySharePoint
 		public CSOMOperation(string webUrl)
 		{
 			OriginalWebUrl = webUrl;
+
+			ThrowOnError = true;
+
 			Context = new ClientContext(webUrl);
 
 			setupOperation(Context);
@@ -200,24 +222,21 @@ namespace KeenMate.FluentlySharePoint
 			ActionQueue.Enqueue(new DeferredAction { ClientObject = LastWeb, Action = DeferredActions.Load });
 		}
 
-		/// <summary>
-		/// Global on being executed handler
-		/// </summary>
-		public Action<ClientContext> OnBeingExecuted { get; set; }
+		public CSOMOperation SetFailHandler(Func<CSOMOperation, Exception, CSOMOperation> handler)
+		{
+			OnFail = handler;
 
-		/// <summary>
-		/// Global on fail handler
-		/// </summary>
-		public Func<CSOMOperation, Exception, CSOMOperation> OnFail { get; set; }
+			return this;
+		}
 
 		/// <summary>
 		/// Should an exception be rethrown on execution failure
 		/// </summary>
-		/// <param name="yesNo"></param>
+		/// <param name="throwOnError"></param>
 		/// <returns></returns>
-		public CSOMOperation ThrowExceptionOnError(bool yesNo)
+		public CSOMOperation ThrowExceptionOnError(bool throwOnError)
 		{
-			ThrowOnError = yesNo;
+			ThrowOnError = throwOnError;
 			return this;
 		}
 
@@ -365,7 +384,7 @@ namespace KeenMate.FluentlySharePoint
 			return this;
 		}
 
-		public CSOMOperation Execute(Func<Exception, CSOMOperation> localFailHandler = null)
+		public CSOMOperation Execute(Func<CSOMOperation, Exception, CSOMOperation> localFailHandler = null)
 		{
 			LogInfo(Messages.AboutToExecute);
 
@@ -401,7 +420,7 @@ namespace KeenMate.FluentlySharePoint
 			return UrlNormalizeFunctor.Invoke(title);
 		}
 
-		private CSOMOperation executeContext(Func<Exception, CSOMOperation> localFailHandler, out bool successful)
+		private CSOMOperation executeContext(Func<CSOMOperation, Exception, CSOMOperation> localFailHandler, out bool successful)
 		{
 			LogTrace($"ThrowOnError set to: {ThrowOnError}, OnBeingExecuted defined: {OnBeingExecuted != null}, LocalFailHandler defined: {localFailHandler != null}, OnFail defined: {OnFail != null}");
 			if (OnBeingExecuted != null)
@@ -426,7 +445,7 @@ namespace KeenMate.FluentlySharePoint
 				if (localFailHandler != null)
 				{
 					LogTrace("Calling local fail handler");
-					localFailHandler.Invoke(ex);
+					localFailHandler.Invoke(this, ex);
 					return this;
 				}
 
