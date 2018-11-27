@@ -24,7 +24,7 @@ namespace TestConsole
 	{
 		public const string SiteUrl =
 				"https://keenmate.sharepoint.com/sites/demo/fluently-sharepoint/";
-		
+
 		public static ILogger logger = new ConsoleLogger();
 
 		static void Main(string[] args)
@@ -35,13 +35,30 @@ namespace TestConsole
 
 			//MeasuredOperation(ReuseExistingContext);
 
-			MeasuredOperation(GetListItems);
+			//MeasuredOperation(() => GetListItems("Documents"));
 
 			//MeasuredOperation(CreateWebAndSeveralListInIt);
 
 			//MeasuredOperation(StartStandardWorkflow);
 
 			//MeasuredOperation(CreateTermSetAndTerm);
+
+			MeasuredOperation(GetAndDeleteItem);
+		}
+
+		private static void GetAndDeleteItem()
+		{
+			CSOMOperation op = SiteUrl
+				.Create(logger)
+				.SetOnlineCredentials(ClientSecrets.Username, ClientSecrets.Password)
+				.Execute();
+
+			op.LoadList("Documents")
+				.Execute();
+
+			ListItem item = op.GetItem(1);
+
+			ListItemCollection items = op.GetItems(x => x.Id, x => x.DisplayName);
 		}
 
 		private static void MeasuredOperation(Action operation)
@@ -104,20 +121,32 @@ namespace TestConsole
 
 		}
 
-		private static void GetListItems()
+		private static void GetListItems(string listName)
 		{
 			var op = SiteUrl
 				.Create(logger)
 				.SetOnlineCredentials(ClientSecrets.Username, ClientSecrets.Password)
-				.LoadList("Reservations");
+				.Execute();
 
-			// Not working, items lack data in any field
-			var items = op.GetItems();
+			var items = op
+				.LoadList(listName)
+				.GetItems();
 
-			var itemsFull = op.LoadedLists["Reservations"]
-				.GetItems(CamlQuery.CreateAllItemsQuery());
+			op.Load(items, x => x.Include(item => item.Id))
+				.Execute();
 
-			op.Execute();
+			//var op = SiteUrl
+			//	.Create(logger)
+			//	.SetOnlineCredentials(ClientSecrets.Username, ClientSecrets.Password)
+			//	.LoadList(listName);
+
+			//// Not working, items lack data in any field
+			//var items = op.GetItems();
+
+			//var itemsFull = op.LoadedLists[listName]
+			//	.GetItems(CamlQuery.CreateAllItemsQuery());
+
+			//op.Execute();
 		}
 
 		private static void CreateWebAndSeveralListInIt()
@@ -159,17 +188,17 @@ namespace TestConsole
 				return operation;
 			}).LoadList("Documents with Workflow", (context, list) =>
 			{
-				context.Load(list, l=>l.WorkflowAssociations, l=>l.Id);
+				context.Load(list, l => l.WorkflowAssociations, l => l.Id);
 			}).Execute();
 
 			var x = op.LastList.WorkflowAssociations;
 			op.Context.Load(x);
 			var items = op.LastList.GetItems(new CamlQuery());
-			
+
 			op.Context.Load(items);
 			op.Execute();
 
-			var itemGuid = items[items.Count-1]["GUID"].ToString();
+			var itemGuid = items[items.Count - 1]["GUID"].ToString();
 
 			var itemId = new Guid(itemGuid);
 
@@ -198,7 +227,7 @@ namespace TestConsole
 					}
 				}
 			};
-			
+
 			data.Add("myFields", allData);
 
 			IDictionary<string, object> data1 = new Dictionary<string, object>();
@@ -208,7 +237,7 @@ namespace TestConsole
 			var wfResult = interOpService.StartWorkflow("Collect feedback", Guid.NewGuid(), op.LastList.Id, itemId, data1);
 			op.Execute();
 			var instancesForListItem = instanceService.EnumerateInstancesForListItem(op.LastList.Id, 2);
-			
+
 
 			//var wa = op.Context.Web.Lists.GetByTitle("xxx").WorkflowAssociations[0];
 			//wa.
@@ -239,9 +268,11 @@ namespace TestConsole
 				return operation;
 			});
 
-			var customProperties = new Dictionary<string, string>();
-			customProperties.Add("Parent", "Parent Term;Parent Term 1");
-			customProperties.Add("Custom property 1", $"{DateTime.Now:G}");
+			var customProperties = new Dictionary<string, string>
+			{
+				{"Parent", "Parent Term;Parent Term 1"},
+				{ "Custom property 1", $"{DateTime.Now:G}"}
+			};
 
 			op.OpenTaxonomySession()
 				.SelectTaxonomyStore()
@@ -258,5 +289,5 @@ namespace TestConsole
 	}
 
 
-	
+
 }
