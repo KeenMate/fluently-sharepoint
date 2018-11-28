@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>KeenMate.FluentlySharePoint.OnPremise</id>
+    <version>$packageVersion$</version>
+    <authors>kmBenjaminHorne</authors>
+    <owners>kmBenjaminHorne</owners>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <licenseUrl>https://github.com/KeenMate/fluently-sharepoint/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/KeenMate/fluently-sharepoint/tree/OnPremise2016</projectUrl>
+    <description>Sentence-like CSOM programming experience for SharePoint 2016 OnPremise using original SharePoint 2016 RTM CSOM NuGet package</description>
+    <releaseNotes>https://github.com/KeenMate/fluently-sharepoint/releases/tag/$tagVersion$</releaseNotes>
+    <copyright>Copyright © KEEN|MATE 2017</copyright>
+    <tags>sharepoint onpremise csom fluently</tags>
+	<repository url="https://github.com/KeenMate/fluently-sharepoint" />
+	<dependencies>
+      <group targetFramework=".NETFramework4.5.1">
+        <dependency id="Microsoft.SharePoint2016.CSOM" version="16.0.4351.1000" exclude="Build,Analyzers" />
+      </group>
+    </dependencies>
+  </metadata>
+  <files>
+    <file src=".\bin\Debug\net451\FluentlySharePoint.OnPremise.dll" target="lib\net451\FluentlySharePoint.OnPremise.dll" />
+  </files>
+</package>
