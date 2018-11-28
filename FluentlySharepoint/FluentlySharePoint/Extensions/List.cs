@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Linq.Expressions;
 using Microsoft.SharePoint.Client;
 using KeenMate.FluentlySharePoint.Assets;
@@ -43,7 +44,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			return operation;
 		}
 
-		
+
 		/// <summary>
 		/// Get items from the last loaded list using CAML query
 		/// </summary>
@@ -95,8 +96,8 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			operation.LogDebug($"Query:\n{query.ViewXml}");
 
 			var listItems = operation.LastList.GetItems(query);
-			
-			if(retrievals != null)
+
+			if (retrievals.Length > 0)
 				operation.Context.Load(listItems, collection => collection.Include(retrievals));
 			else
 				operation.Context.Load(listItems);
@@ -104,6 +105,79 @@ namespace KeenMate.FluentlySharePoint.Extensions
 			operation.Execute();
 
 			return listItems;
+		}
+
+		/// <summary>
+		/// Get Item by id
+		/// </summary>
+		/// <param name="operation"></param>
+		/// <param name="itemId"></param>
+		/// <param name="retrievals"></param>
+		/// <returns></returns>
+		public static ListItem GetItem(this CSOMOperation operation, int itemId, params Expression<Func<ListItem, object>>[] retrievals)
+		{
+			ListItem item = operation.LastList.GetItemById(itemId);
+
+			operation
+				.Load(item, retrievals.Length > 0
+										? retrievals
+										: CSOMOperation.DefaultRetrievals.ListItem)
+				.Execute();
+
+			return item;
+		}
+
+		/// <summary>
+		/// Get Item by its title
+		/// </summary>
+		/// <param name="operation"></param>
+		/// <param name="title"></param>
+		/// <param name="retrievals"></param>
+		/// <returns></returns>
+		public static ListItem GetItem(this CSOMOperation operation, string title, params Expression<Func<ListItem, object>>[] retrievals)
+		{
+			throw new NotImplementedException();
+
+			//CamlQuery titleQuery = new CamlQuery
+			//{
+			//	ViewXml = "<View><Query><Where>" +
+			//							"<Eq>" +
+			//								"<FieldRef Name='Title'/>" +
+			//								$"<Value Type='Text'>{title}</Value>" +
+			//							"</Eq>" +
+			//						"</Where></Query></View>"
+			//};
+
+			//return operation.GetItem(titleQuery, retrievals);
+		}
+
+		/// <summary>
+		/// Get Item using CamlQuery
+		/// </summary>
+		/// <param name="operation"></param>
+		/// <param name="query"></param>
+		/// <param name="retrievals"></param>
+		/// <returns></returns>
+		public static ListItem GetItem(this CSOMOperation operation, CamlQuery query)
+		{
+			ListItemCollection items = operation
+				.LastList
+				.GetItems(query);
+
+			ListItem item = items.FirstOrDefault();
+
+			operation.Load(item);
+
+			return item;
+		}
+
+		public static CSOMOperation DeleteItem(this CSOMOperation operation, int itemId)
+		{
+			operation.LastList
+				.GetItemById(itemId)
+				.DeleteObject();
+
+			return operation;
 		}
 
 		/// <summary>

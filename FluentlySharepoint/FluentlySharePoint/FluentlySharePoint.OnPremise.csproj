@@ -5,7 +5,7 @@
     <RootNamespace>KeenMate.FluentlySharePoint</RootNamespace>
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <PackageId>KeenMate.FluentlySharePoint.OnPremise</PackageId>
-    <Version></Version>
+    <Version>0.5.0-beta.2</Version>
     <Company>KEEN|MATE</Company>
     <Copyright>Copyright © KEEN|MATE 2018</Copyright>
     <PackageLicenseUrl>https://github.com/KeenMate/fluently-sharepoint/blob/master/LICENSE</PackageLicenseUrl>
