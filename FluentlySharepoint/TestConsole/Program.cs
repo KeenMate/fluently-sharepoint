@@ -22,14 +22,8 @@ namespace TestConsole
 {
 	class Program
 	{
-		public const string UserName = "trent.reznor@keenmate.com";
-		public const string Password = "Discipline042008";
 		public const string SiteUrl =
-				"https://keenmate.sharepoint.com/sites/demo/fluently-sharepoint/";
-
-		public const string OnPremiseDomain = "km";
-		public const string OnPremiseUserName = "ondrej.valenta";
-		public const string OnPremisePassword = "3.18Fuchsie";
+				"http://dev-sp2016-01:7000/";
 
 		public static ILogger logger = new ConsoleLogger();
 
@@ -41,11 +35,30 @@ namespace TestConsole
 
 			//MeasuredOperation(ReuseExistingContext);
 
+			//MeasuredOperation(() => GetListItems("Documents"));
+
 			//MeasuredOperation(CreateWebAndSeveralListInIt);
 
 			//MeasuredOperation(StartStandardWorkflow);
 
-			MeasuredOperation(CreateTermSetAndTerm);
+			//MeasuredOperation(CreateTermSetAndTerm);
+
+			MeasuredOperation(GetAndDeleteItem);
+		}
+
+		private static void GetAndDeleteItem()
+		{
+			CSOMOperation op = SiteUrl
+				.Create(logger)
+				.SetNetworkCredentials(ClientSecrets.Username, ClientSecrets.Password)
+				.Execute();
+
+			op.LoadList("Dokumenty")
+				.Execute();
+
+			ListItem item = op.GetItem(1);
+
+			ListItemCollection items = op.GetItems(x => x.Id, x => x.DisplayName);
 		}
 
 		private static void MeasuredOperation(Action operation)
@@ -63,7 +76,7 @@ namespace TestConsole
 		{
 			var op = SiteUrl
 				.Create(logger)
-				.SetOnlineCredentials(UserName, Password) // Available also with SecureString parameter
+				.SetOnlineCredentials(ClientSecrets.Username, ClientSecrets.Password) // Available also with SecureString parameter
 				.Execute();
 
 			logger.Trace($"Default timeout: {op.Context.RequestTimeout}");
@@ -75,7 +88,7 @@ namespace TestConsole
 
 			var op = SiteUrl
 				.Create(logger)
-				.SetOnlineCredentials(UserName, Password) // Available also with SecureString parameter
+				.SetOnlineCredentials(ClientSecrets.Username, ClientSecrets.Password) // Available also with SecureString parameter
 				.Execute();
 
 			var listTitle = "Documents";
@@ -95,7 +108,7 @@ namespace TestConsole
 			logger.Info("Reuse existing context example");
 
 			ClientContext context = new ClientContext(SiteUrl);
-			context.Credentials = new SharePointOnlineCredentials(UserName, Password.ToSecureString());
+			context.Credentials = new SharePointOnlineCredentials(ClientSecrets.Username, ClientSecrets.Password.ToSecureString());
 
 			var listTitle = "Documents";
 
@@ -108,11 +121,39 @@ namespace TestConsole
 
 		}
 
+		private static void GetListItems(string listName)
+		{
+			var op = SiteUrl
+				.Create(logger)
+				.SetOnlineCredentials(ClientSecrets.Username, ClientSecrets.Password)
+				.Execute();
+
+			var items = op
+				.LoadList(listName)
+				.GetItems();
+
+			op.Load(items, x => x.Include(item => item.Id))
+				.Execute();
+
+			//var op = SiteUrl
+			//	.Create(logger)
+			//	.SetOnlineCredentials(ClientSecrets.Username, ClientSecrets.Password)
+			//	.LoadList(listName);
+
+			//// Not working, items lack data in any field
+			//var items = op.GetItems();
+
+			//var itemsFull = op.LoadedLists[listName]
+			//	.GetItems(CamlQuery.CreateAllItemsQuery());
+
+			//op.Execute();
+		}
+
 		private static void CreateWebAndSeveralListInIt()
 		{
 			var op = SiteUrl
 				.Create(new ConsoleLogger())
-				.SetOnlineCredentials(UserName, Password)
+				.SetOnlineCredentials(ClientSecrets.Username, ClientSecrets.Password)
 				.CreateWeb($"New Web - {DateTime.Now:HH-mm}", (int)Lcid.English, $"NewWeb-{DateTime.Now:HH-mm}")
 				.CreateList("Customers")
 				.AddNumberField("Internal number")
@@ -138,26 +179,26 @@ namespace TestConsole
 				.SetupContext(context =>
 				{
 					context.Credentials =
-						new NetworkCredential() { Domain = OnPremiseDomain, Password = OnPremisePassword, UserName = OnPremiseUserName };
+						new NetworkCredential() { Domain = ClientSecrets.Domain, Password = ClientSecrets.Password, UserName = ClientSecrets.Username };
 				});
-			//.SetOnlineCredentials(UserName, Password);
+			//.SetOnlineCredentials(ClientSecrets.Username, ClientSecrets.Password);
 			op.Fail((operation, exception) =>
 			{
 				Console.WriteLine(exception.Message);
 				return operation;
 			}).LoadList("Documents with Workflow", (context, list) =>
 			{
-				context.Load(list, l=>l.WorkflowAssociations, l=>l.Id);
+				context.Load(list, l => l.WorkflowAssociations, l => l.Id);
 			}).Execute();
 
 			var x = op.LastList.WorkflowAssociations;
 			op.Context.Load(x);
 			var items = op.LastList.GetItems(new CamlQuery());
-			
+
 			op.Context.Load(items);
 			op.Execute();
 
-			var itemGuid = items[items.Count-1]["GUID"].ToString();
+			var itemGuid = items[items.Count - 1]["GUID"].ToString();
 
 			var itemId = new Guid(itemGuid);
 
@@ -186,7 +227,7 @@ namespace TestConsole
 					}
 				}
 			};
-			
+
 			data.Add("myFields", allData);
 
 			IDictionary<string, object> data1 = new Dictionary<string, object>();
@@ -196,7 +237,7 @@ namespace TestConsole
 			var wfResult = interOpService.StartWorkflow("Collect feedback", Guid.NewGuid(), op.LastList.Id, itemId, data1);
 			op.Execute();
 			var instancesForListItem = instanceService.EnumerateInstancesForListItem(op.LastList.Id, 2);
-			
+
 
 			//var wa = op.Context.Web.Lists.GetByTitle("xxx").WorkflowAssociations[0];
 			//wa.
@@ -218,18 +259,20 @@ namespace TestConsole
 				.SetupContext(context =>
 				{
 					context.Credentials =
-						new NetworkCredential() { Domain = OnPremiseDomain, Password = OnPremisePassword, UserName = OnPremiseUserName };
+						new NetworkCredential() { Domain = ClientSecrets.Domain, Password = ClientSecrets.Password, UserName = ClientSecrets.Username };
 				});
-			//.SetOnlineCredentials(UserName, Password);
+			//.SetOnlineCredentials(ClientSecrets.Username, ClientSecrets.Password);
 			op.Fail((operation, exception) =>
 			{
 				Console.WriteLine(exception.Message);
 				return operation;
 			});
 
-			var customProperties = new Dictionary<string, string>();
-			customProperties.Add("Parent", "Parent Term;Parent Term 1");
-			customProperties.Add("Custom property 1", $"{DateTime.Now:G}");
+			var customProperties = new Dictionary<string, string>
+			{
+				{"Parent", "Parent Term;Parent Term 1"},
+				{ "Custom property 1", $"{DateTime.Now:G}"}
+			};
 
 			op.OpenTaxonomySession()
 				.SelectTaxonomyStore()
@@ -246,5 +289,5 @@ namespace TestConsole
 	}
 
 
-	
+
 }

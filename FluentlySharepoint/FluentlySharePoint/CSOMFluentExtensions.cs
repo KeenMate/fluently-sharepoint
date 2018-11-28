@@ -80,7 +80,7 @@ namespace KeenMate.FluentlySharePoint
 			return operation;
 		}
 
-	/// <summary>
+		/// <summary>
 		/// Set online credentials with username and plain password
 		/// </summary>
 		/// <param name="operation"></param>
@@ -168,7 +168,8 @@ namespace KeenMate.FluentlySharePoint
 		public static CSOMOperation Fail(this CSOMOperation operation, Func<CSOMOperation, Exception, CSOMOperation> handler)
 		{
 			operation.LogDebug("Fail handler set");
-			operation.OnFail = handler;
+			operation.SetFailHandler(handler);
+			//operation.OnFail = handler;
 			return operation;
 		}
 	}

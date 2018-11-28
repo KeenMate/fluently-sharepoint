@@ -19,12 +19,12 @@ namespace KeenMate.FluentlySharePoint.Loggers
 
 		public void Trace(string message)
 		{
-			WriteLineInColor(message, ConsoleColor.Gray);
+			WriteLineInColor(message, ConsoleColor.DarkGray);
 		}
 
 		public void Debug(string message)
 		{
-			WriteLineInColor(message, ConsoleColor.DarkGray);
+			WriteLineInColor(message, ConsoleColor.Gray);
 		}
 
 		public void Info(string message)

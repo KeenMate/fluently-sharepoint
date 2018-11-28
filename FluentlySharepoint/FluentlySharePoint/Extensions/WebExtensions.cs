@@ -62,8 +62,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 		{
 			operation.LogDebug($"Loading web");
 
-			operation.Context.Load(web,
-				retrievals != null && retrievals.Length > 0
+			operation.Context.Load(web, retrievals.Length > 0
 					? retrievals
 					: CSOMOperation.DefaultRetrievals.Web);
 
@@ -88,8 +87,7 @@ namespace KeenMate.FluentlySharePoint.Extensions
 		{
 			var templates = operation.LastSite.GetCustomListTemplates(operation.DecideWeb());
 
-			operation.Context.Load(templates,
-				retrievals != null && retrievals.Length > 0
+			operation.Context.Load(templates, retrievals.Length > 0
 					? retrievals
 					: CSOMOperation.DefaultRetrievals.ListTemplateCollection);
 
