@@ -35,7 +35,7 @@ namespace TestConsole
 
 			//MeasuredOperation(ReuseExistingContext);
 
-			//MeasuredOperation(() => GetListItems("Documents"));
+			MeasuredOperation(() => GetListItems("Dokumenty"));
 
 			//MeasuredOperation(CreateWebAndSeveralListInIt);
 
@@ -43,7 +43,7 @@ namespace TestConsole
 
 			//MeasuredOperation(CreateTermSetAndTerm);
 
-			MeasuredOperation(GetAndDeleteItem);
+			//MeasuredOperation(GetAndDeleteItem);
 		}
 
 		private static void GetAndDeleteItem()
@@ -125,7 +125,6 @@ namespace TestConsole
 		{
 			var op = SiteUrl
 				.Create(logger)
-				.SetOnlineCredentials(ClientSecrets.Username, ClientSecrets.Password)
 				.Execute();
 
 			var items = op
