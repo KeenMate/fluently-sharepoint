@@ -41,7 +41,6 @@ namespace KeenMate.FluentlySharePoint
 				g => g.Url,
 				g => g.Description,
 				g => g.Language,
-				g => g.IsMultilingual,
 				g => g.WebTemplate
 			};
 
